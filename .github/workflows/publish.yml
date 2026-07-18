@@ -34,16 +34,23 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v3
-
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: ./_site
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GH_PAGES_TOKEN }}
-          publish_dir: ./_site
+      - name: Deploy via git
+        env:
+          GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          echo "Preparing gh-pages branch"
+          rm -rf out || true
+          mkdir out
+          cp -r _site/. out/
+          cd out
+          git init
+          git checkout -b gh-pages
+          git add --all
+          if git diff --quiet --cached; then
+            echo "No changes to publish"
+          else
+            git commit -m "Deploy site from ${GITHUB_SHA}"
+            git push --force "https://x-access-token:${GH_PAGES_TOKEN}@github.com/${REPO}.git" gh-pages
+          fi
