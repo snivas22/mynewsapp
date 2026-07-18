@@ -1,0 +1,15 @@
+﻿---
+layout: layouts/base.njk
+title: Health
+---
+
+<h2>Health</h2>
+<ul>
+{% set items = collections.all | reverse | filter(item => item.data.category == "health") %}
+{% for item in items %}
+<li>
+  <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
+  <div class="meta">{{ item.date | date('yyyy-LL-dd') }} • {{ item.data.source }}</div>
+</li>
+{% endfor %}
+</ul>

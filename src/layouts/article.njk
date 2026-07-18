@@ -1,0 +1,10 @@
+﻿---
+layout: layouts/base.njk
+---
+
+<article>
+  <h2>{{ title }}</h2>
+  <div class="meta">{{ date | date('yyyy-LL-dd') }} • {{ source }}</div>
+  <div class="content">{{ content | safe }}</div>
+  {% if original_link %}<p><a href="{{ original_link }}">Read original</a></p>{% endif %}
+</article>

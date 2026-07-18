@@ -1,0 +1,11 @@
+﻿:root{--max-width:900px;--accent:#0b7285}
+*{box-sizing:border-box}
+body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;padding:1rem;color:#111;max-width:var(--max-width);margin-left:auto;margin-right:auto}
+header{border-bottom:1px solid #eee;padding-bottom:1rem;margin-bottom:1rem}
+nav a{margin-right:0.75rem;color:var(--accent);text-decoration:none}
+nav a:hover{text-decoration:underline}
+article{margin-bottom:1.5rem}
+.meta{color:#666;font-size:0.9rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.card{border:1px solid #eee;padding:0.75rem;border-radius:6px;background:#fff}
+footer{border-top:1px solid #f1f1f1;padding-top:1rem;margin-top:2rem;color:#666;font-size:0.9rem}

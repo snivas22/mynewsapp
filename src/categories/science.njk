@@ -1,0 +1,15 @@
+﻿---
+layout: layouts/base.njk
+title: Science
+---
+
+<h2>Science</h2>
+<ul>
+{% set items = collections.all | reverse | filter(item => item.data.category == "science") %}
+{% for item in items %}
+<li>
+  <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
+  <div class="meta">{{ item.date | date('yyyy-LL-dd') }} • {{ item.data.source }}</div>
+</li>
+{% endfor %}
+</ul>
