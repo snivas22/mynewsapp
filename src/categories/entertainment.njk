@@ -5,7 +5,7 @@ title: Entertainment
 
 <h2>Entertainment</h2>
 <ul>
-{% set items = collections.all | reverse | filter(item => item.data.category == "entertainment") %}
+{% set items = collections.entertainment %}
 {% for item in items %}
 <li>
   <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>

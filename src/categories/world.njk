@@ -5,7 +5,7 @@ title: World
 
 <h2>World</h2>
 <ul>
-{% set items = collections.all | reverse | filter(item => item.data.category == "world") %}
+{% set items = collections.world %}
 {% for item in items %}
 <li>
   <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>

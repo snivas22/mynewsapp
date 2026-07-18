@@ -5,7 +5,7 @@ title: Health
 
 <h2>Health</h2>
 <ul>
-{% set items = collections.all | reverse | filter(item => item.data.category == "health") %}
+{% set items = collections.health %}
 {% for item in items %}
 <li>
   <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
