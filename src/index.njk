@@ -11,8 +11,8 @@ title: Home
   <section>
     <h3>{{ cat | title }}</h3>
     <ul>
-      {% set items = collections.all | reverse | filter(item => item.data.category == cat) | slice(0,8) %}
-      {% if items.length == 0 %}
+      {% set items = collections[cat] %}
+      {% if items | length == 0 %}
         <li>No articles yet. Run the fetch action or add articles to src/articles/{{ cat }}.</li>
       {% endif %}
       {% for item in items %}
