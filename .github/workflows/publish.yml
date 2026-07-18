@@ -51,10 +51,11 @@ jobs:
           # Configure identity for the commit
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
+          git remote set-url origin https://x-access-token:${GH_PAGES_TOKEN}@github.com/${REPO}.git
           git add --all
           if git diff --quiet --cached; then
             echo "No changes to publish"
           else
             git commit -m "Deploy site from ${GITHUB_SHA}"
-            git push --force "https://x-access-token:${GH_PAGES_TOKEN}@github.com/${REPO}.git" gh-pages
+            git push --force origin gh-pages
           fi
