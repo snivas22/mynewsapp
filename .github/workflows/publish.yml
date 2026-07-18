@@ -1,10 +1,15 @@
-name: Build and publish site
+﻿name: Build and publish site
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
   schedule:
     - cron: '0 * * * *' # hourly fetch (adjust as needed)
+
+permissions:
+  contents: read
+  pages: write
 
 jobs:
   build:
