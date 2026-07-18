@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ title or 'News Aggregator' }}</title>
+    <style>
+      body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;padding:1rem}
+      header{border-bottom:1px solid #eee;padding-bottom:1rem;margin-bottom:1rem}
+      nav a{margin-right:0.5rem}
+      article{margin-bottom:1.5rem}
+      .meta{color:#666;font-size:0.9rem}
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">News Aggregator</a></h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="#categories">Categories</a>
+      </nav>
+    </header>
+
+    <main>
+      {{ content | safe }}
+    </main>
+
+    <footer>
+      <p class="meta">Generated with Eleventy • Fetches public RSS feeds (no news APIs)</p>
+    </footer>
+  </body>
+</html>

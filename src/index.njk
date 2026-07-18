@@ -1,0 +1,29 @@
+---
+layout: layouts/base.njk
+title: Home
+---
+
+<h2 id="categories">Latest by category</h2>
+
+{% set categories = [ 'politics','world','business','technology','sports','entertainment','science','health' ] %}
+
+{% for cat in categories %}
+  <section>
+    <h3>{{ cat | title }}</h3>
+    <ul>
+      {% set items = collections.all | reverse | filter(item => item.data.category == cat) | slice(0,8) %}
+      {% if items.length == 0 %}
+        <li>No articles yet. Run the fetch action or add articles to src/articles/{{ cat }}.</li>
+      {% endif %}
+      {% for item in items %}
+        <li>
+          <article>
+            <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
+            <div class="meta">{{ item.date | date('yyyy-LL-dd') }} • {{ item.data.source }}</div>
+            <p>{{ item.templateContent | striptags | truncate(200) }}</p>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endfor %}
