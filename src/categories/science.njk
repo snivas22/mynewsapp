@@ -9,7 +9,7 @@ title: Science
 {% for item in items %}
 <li>
   <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
-  <div class="meta">{{ item.date | date('yyyy-LL-dd') }} • {{ item.data.source }}</div>
+  <div class="meta">{{ item.date }} • {{ item.data.source }}</div>
 </li>
 {% endfor %}
 </ul>
