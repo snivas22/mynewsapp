@@ -47,6 +47,9 @@ jobs:
           cd out
           git init
           git checkout -b gh-pages
+          # Configure identity for the commit
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
           git add --all
           if git diff --quiet --cached; then
             echo "No changes to publish"
