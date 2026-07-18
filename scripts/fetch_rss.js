@@ -44,6 +44,30 @@ function slugify(s) {
     .replace(/(^-|-$)/g, '');
 }
 
+async function fetchWithRetry(url, attempts = 3, timeoutMs = 15000) {
+  for (let i = 0; i < attempts; i++) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'news-aggregator-bot/1.0 (+https://github.com/snivas22/mynewsapp)'
+        }
+      });
+      clearTimeout(id);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
+    } catch (err) {
+      clearTimeout(id);
+      if (i === attempts - 1) throw err;
+      const delay = 1000 * Math.pow(2, i);
+      console.warn(`Attempt ${i + 1} failed for ${url}: ${err.message}. Retrying in ${delay}ms`);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
 async function fetchAndWrite() {
   const articlesDir = path.join(__dirname, '..', 'src', 'articles');
   if (!fs.existsSync(articlesDir)) fs.mkdirSync(articlesDir, { recursive: true });
@@ -55,8 +79,10 @@ async function fetchAndWrite() {
     let count = 0;
     for (const feedUrl of feeds) {
       try {
-        const feed = await parser.parseURL(feedUrl);
-        for (const item of feed.items.slice(0, 5)) { // limit per feed
+        // Use fetch with retries and parse the feed string
+        const text = await fetchWithRetry(feedUrl, 3, 15000);
+        const feed = await parser.parseString(text);
+        for (const item of (feed.items || []).slice(0, 5)) { // limit per feed
           const title = item.title || 'Untitled';
           const date = item.isoDate || item.pubDate || new Date().toISOString();
           const link = item.link || '';

@@ -19,7 +19,7 @@ title: Home
         <li>
           <article>
             <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
-            <div class="meta">{{ item.date }} • {{ item.data.source }}</div>
+            <div class="meta">{{ item.date | readableDate }} • {{ item.data.source }}</div>
             <p>{{ item.templateContent | striptags | truncate(200) }}</p>
           </article>
         </li>
