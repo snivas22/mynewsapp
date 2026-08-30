@@ -2,9 +2,11 @@
   "name": "news-aggregator-site",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://snivas22.github.io/mynewsapp/",
   "scripts": {
     "fetch": "node scripts/fetch_rss.js",
-    "build": "eleventy",
+    "build": "eleventy && node -e \"require('fs').writeFileSync('_site/.nojekyll', '')\"",
+    "dev": "eleventy --serve",
     "prepare": "npm run fetch && npm run build"
   },
   "dependencies": {

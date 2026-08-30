@@ -1,4 +1,4 @@
-﻿name: Build and publish site
+﻿name: Deploy News Site to GitHub Pages
 
 on:
   push:
@@ -10,52 +10,49 @@ on:
 permissions:
   contents: read
   pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          fetch-depth: 0
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
-        run: npm install --no-audit
+        run: npm ci
 
-      - name: Fetch RSS feeds
+      - name: Fetch latest news data
         run: npm run fetch
 
-      - name: Build site
+      - name: Build static site
         run: npm run build
 
-      - name: Deploy via git
-        env:
-          GH_PAGES_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          echo "Preparing gh-pages branch"
-          rm -rf out || true
-          mkdir out
-          cp -r _site/. out/
-          cd out
-          git init
-          git checkout -b gh-pages
-          # Configure identity for the commit
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git remote set-url origin https://x-access-token:${GH_PAGES_TOKEN}@github.com/${REPO}.git
-          git add --all
-          if git diff --quiet --cached; then
-            echo "No changes to publish"
-          else
-            git commit -m "Deploy site from ${GITHUB_SHA}"
-            git push --force origin gh-pages
-          fi
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
