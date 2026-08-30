@@ -52,6 +52,7 @@ module.exports = function(eleventyConfig) {
         const date = data.date || new Date().toISOString();
         const source = data.source || 'Open source feed';
         const originalLink = data.original_link || '#';
+        const country = data.country || 'global';
 
         return {
           inputPath: `src/articles/${cat}/${file}`,
@@ -63,7 +64,8 @@ module.exports = function(eleventyConfig) {
             category: cat,
             source,
             original_link: originalLink,
-            date
+            date,
+            country
           }
         };
       })

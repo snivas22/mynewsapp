@@ -131,6 +131,16 @@ function matchesAITrend(text) {
   return hasAi && !hasNonAi;
 }
 
+function inferCountry(text, source, url) {
+  const haystack = `${text || ''} ${source || ''} ${url || ''}`.toLowerCase();
+  if (/(uk|united kingdom|britain|england|scotland|wales|northern ireland|london|parliament|government)/.test(haystack)) return 'uk';
+  if (/(us|united states|usa|washington|california|texas|new york|federal)/.test(haystack)) return 'us';
+  if (/(india|mumbai|delhi|modi|bengaluru|hyderabad|india's)/.test(haystack)) return 'india';
+  if (/(australia|sydney|melbourne|canberra|australian)/.test(haystack)) return 'australia';
+  if (/(uae|dubai|abu dhabi|emirates|united arab)/.test(haystack)) return 'uae';
+  return 'global';
+}
+
 function dedupeArticles(items) {
   const seen = new Map();
   for (const entry of items) {
@@ -170,6 +180,8 @@ async function fetchAndWrite() {
 
           if (!title || !link) continue;
 
+          const country = inferCountry(`${title} ${summary}`, source, link);
+
           const shouldKeep = category === 'ai-trends'
             ? matchesAITrend(`${title} ${summary}`)
             : true;
@@ -182,7 +194,8 @@ async function fetchAndWrite() {
             source,
             date,
             category,
-            summary
+            summary,
+            country
           });
         }
       } catch (err) {
@@ -197,7 +210,7 @@ async function fetchAndWrite() {
       const slug = slugify(`${article.title}-${article.link}`);
       const filename = path.join(categoryDir, `${slug}.md`);
       const body = article.summary ? article.summary : 'No summary available.';
-      const md = `---\ntitle: "${escapeFrontmatter(article.title)}"\ndate: "${article.date}"\ncategory: "${article.category}"\nsource: "${escapeFrontmatter(article.source)}"\noriginal_link: "${escapeFrontmatter(article.link)}"\n---\n\n${body}\n\n[Read original article](${article.link})\n`;
+      const md = `---\ntitle: "${escapeFrontmatter(article.title)}"\ndate: "${article.date}"\ncategory: "${article.category}"\nsource: "${escapeFrontmatter(article.source)}"\noriginal_link: "${escapeFrontmatter(article.link)}"\ncountry: "${escapeFrontmatter(article.country || 'global')}"\n---\n\n${body}\n\n[Read original article](${article.link})\n`;
 
       fs.writeFileSync(filename, md, 'utf8');
       count++;

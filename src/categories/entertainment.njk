@@ -7,7 +7,7 @@ title: Entertainment
 <div class="story-grid">
   {% set items = collections.entertainment %}
   {% for item in items %}
-    <article class="story-card">
+    <article class="story-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
       <div class="story-meta">
         <span class="story-source entertainment">{{ item.data.source }}</span>
         <span>{{ item.date | readableDate }}</span>

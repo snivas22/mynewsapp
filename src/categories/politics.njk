@@ -14,7 +14,7 @@ title: Politics
     <div class="empty-panel">No politics articles are available yet.</div>
   {% endif %}
   {% for item in items %}
-    <article class="story-card featured-card">
+    <article class="story-card featured-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
       <div class="story-meta">
         <span class="story-source politics">{{ item.data.source }}</span>
         <span>{{ item.date | readableDate }}</span>

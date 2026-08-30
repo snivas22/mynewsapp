@@ -22,6 +22,19 @@
         </div>
 
         <div class="top-actions">
+          <label class="country-picker-wrap" aria-label="Select country">
+            <span>Country</span>
+            <select id="country-selector" class="country-picker">
+              <option value="all">All countries</option>
+              <option value="global">Global</option>
+              <option value="uk">United Kingdom</option>
+              <option value="us">United States</option>
+              <option value="india">India</option>
+              <option value="australia">Australia</option>
+              <option value="uae">UAE</option>
+            </select>
+          </label>
+
           <label class="search-box" aria-label="Search news">
             <span>⌕</span>
             <input id="news-search" type="search" placeholder="Search stories" />
@@ -155,18 +168,52 @@
       const searchableItems = document.querySelectorAll('[data-searchable]');
       const navToggle = document.querySelector('.nav-toggle');
       const mainNav = document.querySelector('.main-nav');
+      const countrySelector = document.getElementById('country-selector');
+      let currentCountry = localStorage.getItem('news-country') || 'all';
+      let currentQuery = '';
+
+      function inferCountryFromText(text) {
+        const value = (text || '').toLowerCase();
+        if (/(uk|united kingdom|britain|england|scotland|wales|london|parliament|government)/.test(value)) return 'uk';
+        if (/(us|united states|usa|washington|california|texas|new york|federal)/.test(value)) return 'us';
+        if (/(india|mumbai|delhi|modi|bengaluru|hyderabad)/.test(value)) return 'india';
+        if (/(australia|sydney|melbourne|canberra|australian)/.test(value)) return 'australia';
+        if (/(uae|dubai|abu dhabi|emirates|united arab)/.test(value)) return 'uae';
+        return 'global';
+      }
+
+      function applyUiFilters() {
+        searchableItems.forEach((item) => {
+          const explicitCountry = (item.dataset.country || '').toLowerCase();
+          const inferredCountry = inferCountryFromText(item.dataset.searchable || item.textContent || '');
+          const country = explicitCountry || inferredCountry;
+          const matchesCountry = currentCountry === 'all' || currentCountry === 'global' || country === currentCountry || country === 'global';
+          const text = (item.dataset.searchable || item.textContent || '').toLowerCase();
+          const matchesQuery = !currentQuery || text.includes(currentQuery);
+          item.style.display = matchesCountry && matchesQuery ? '' : 'none';
+        });
+      }
+
+      if (countrySelector) {
+        const savedCountry = localStorage.getItem('news-country') || 'all';
+        currentCountry = savedCountry;
+        countrySelector.value = savedCountry;
+
+        countrySelector.addEventListener('change', (event) => {
+          currentCountry = event.target.value || 'all';
+          localStorage.setItem('news-country', currentCountry);
+          applyUiFilters();
+        });
+      }
 
       if (searchInput && searchableItems.length) {
         searchInput.addEventListener('input', (event) => {
-          const query = event.target.value.trim().toLowerCase();
-
-          searchableItems.forEach((item) => {
-            const text = (item.dataset.searchable || item.textContent || '').toLowerCase();
-            const match = !query || text.includes(query);
-            item.style.display = match ? '' : 'none';
-          });
+          currentQuery = event.target.value.trim().toLowerCase();
+          applyUiFilters();
         });
       }
+
+      applyUiFilters();
 
       if (navToggle && mainNav) {
         navToggle.addEventListener('click', () => {
