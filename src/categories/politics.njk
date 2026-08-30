@@ -3,13 +3,25 @@ layout: base.njk
 title: Politics
 ---
 
-<h2>Politics</h2>
-<ul>
-{% set items = collections.politics %}
-{% for item in items %}
-<li>
-  <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
-  <div class="meta">{{ item.date | readableDate }} • {{ item.data.source }}</div>
-</li>
-{% endfor %}
-</ul>
+<section class="page-header">
+  <p class="eyebrow">Live category feed</p>
+  <h2>Politics</h2>
+</section>
+
+<div class="story-grid">
+  {% set items = collections.politics %}
+  {% if items | length == 0 %}
+    <div class="empty-panel">No politics articles are available yet.</div>
+  {% endif %}
+  {% for item in items %}
+    <article class="story-card featured-card">
+      <div class="story-meta">
+        <span class="story-source politics">{{ item.data.source }}</span>
+        <span>{{ item.date | readableDate }}</span>
+      </div>
+      <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
+      <p>{{ item.templateContent | striptags | truncate(180) }}</p>
+      <a class="read-more" href="{{ item.url }}">Read article →</a>
+    </article>
+  {% endfor %}
+</div>

@@ -3,27 +3,81 @@ layout: base.njk
 title: Home
 ---
 
-<h2 id="categories">Latest by category</h2>
+<section class="hero-panel">
+  <div class="lead-story">
+    <p class="eyebrow">Top story</p>
+    {% set featured = collections.politics[0] %}
+    {% if featured %}
+      <h2><a href="{{ featured.url }}">{{ featured.data.title }}</a></h2>
+      <p class="hero-copy">{{ featured.templateContent | striptags | truncate(220) }}</p>
+      <div class="story-meta-row">
+        <span>{{ featured.date | readableDate }}</span>
+        <span>{{ featured.data.source }}</span>
+      </div>
+    {% else %}
+      <h2>Fresh stories from across the world.</h2>
+      <p class="hero-copy">Track the latest reporting in politics, business, technology, sports, health, and more with a clean, readable dashboard.</p>
+    {% endif %}
+    <div class="hero-actions">
+      <a class="primary-btn" href="/categories/">Explore categories</a>
+      <a class="secondary-btn" href="/categories/politics/">Top story</a>
+    </div>
+  </div>
+
+  <div class="status-box">
+    <span class="status-dot"></span>
+    <div>
+      <strong>RSS stream active</strong>
+      <small>Updated automatically on schedule</small>
+    </div>
+  </div>
+</section>
+
+<section class="breaking-stack">
+  {% set categories = [ 'politics','world','business','technology' ] %}
+  {% for cat in categories %}
+    {% set items = collections[cat] %}
+    {% if items and items.length > 0 %}
+      <article class="headline-box">
+        <span class="mini-label {{ cat }}">{{ cat | title }}</span>
+        <a href="{{ items[0].url }}">{{ items[0].data.title }}</a>
+      </article>
+    {% endif %}
+  {% endfor %}
+</section>
 
 {% set categories = [ 'politics','world','business','technology','sports','entertainment','science','health' ] %}
 
-{% for cat in categories %}
-  <section>
-    <h3>{{ cat | title }}</h3>
-    <ul>
-      {% set items = collections[cat] %}
+<section class="stats-row">
+  {% for cat in categories %}
+    <div class="stat-card">
+      <span>{{ cat | title }}</span>
+      <strong>{{ collections[cat] | length }}</strong>
+    </div>
+  {% endfor %}
+</section>
+
+<section class="category-grid">
+  {% for cat in categories %}
+    {% set items = collections[cat] %}
+    <article class="category-card" style="--card-accent: var(--{{ cat }});" data-searchable="{{ cat }}{% for item in items %} {{ item.data.title }}{% endfor %}">
+      <div class="category-head">
+        <span class="category-tag {{ cat }}">{{ cat | title }}</span>
+        <a href="/categories/{{ cat }}/">View all</a>
+      </div>
+
       {% if items | length == 0 %}
-        <li>No articles yet. Run the fetch action or add articles to src/articles/{{ cat }}.</li>
+        <p class="empty-state">No stories available yet.</p>
+      {% else %}
+        <ul class="story-list compact">
+          {% for item in items.slice(0, 3) %}
+            <li>
+              <a href="{{ item.url }}">{{ item.data.title }}</a>
+              <div class="meta">{{ item.date | readableDate }} • {{ item.data.source }}</div>
+            </li>
+          {% endfor %}
+        </ul>
       {% endif %}
-      {% for item in items %}
-        <li>
-          <article>
-            <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
-            <div class="meta">{{ item.date | readableDate }} • {{ item.data.source }}</div>
-            <p>{{ item.templateContent | striptags | truncate(200) }}</p>
-          </article>
-        </li>
-      {% endfor %}
-    </ul>
-  </section>
-{% endfor %}
+    </article>
+  {% endfor %}
+</section>

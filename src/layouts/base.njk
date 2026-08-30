@@ -3,29 +3,96 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Live news dashboard for politics, business, technology, sports, and more.">
     <title>{{ title or 'News Aggregator' }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css">
   </head>
   <body>
-    <header>
-      <h1><a href="/">News Aggregator</a></h1>
-      <nav>
-        <a href="/">Home</a>
-        <a href="/categories/">Categories</a>
-        <a href="/categories/politics/">Politics</a>
-        <a href="/categories/world/">World</a>
-        <a href="/categories/business/">Business</a>
-        <a href="/categories/technology/">Technology</a>
-        <a href="/categories/sports/">Sports</a>
-      </nav>
-    </header>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <span class="brand-mark">N</span>
+          <div>
+            <p class="brand-kicker">Live updates</p>
+            <h1><a href="/">NewsPulse</a></h1>
+          </div>
+        </div>
 
-    <main>
-      {{ content | safe }}
-    </main>
+        <div class="top-actions">
+          <label class="search-box" aria-label="Search news">
+            <span>⌕</span>
+            <input id="news-search" type="search" placeholder="Search stories" />
+          </label>
 
-    <footer>
-      <p class="meta">Generated with Eleventy • Fetches public RSS feeds (no news APIs)</p>
-    </footer>
+          <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          <nav class="main-nav" aria-label="Main navigation">
+            <a href="/">Home</a>
+            <a href="/categories/">Categories</a>
+            <a href="/categories/politics/">Politics</a>
+            <a href="/categories/world/">World</a>
+            <a href="/categories/business/">Business</a>
+            <a href="/categories/technology/">Technology</a>
+            <a href="/categories/sports/">Sports</a>
+          </nav>
+        </div>
+      </header>
+
+      <div class="ticker-wrap" aria-label="Breaking news ticker">
+        <div class="ticker-label">LIVE</div>
+        <div class="ticker-track">
+          <span>Global markets shifting • AI regulation debate intensifies • Climate response under scrutiny • Sports finals heating up • Health alerts updated</span>
+          <span>Global markets shifting • AI regulation debate intensifies • Climate response under scrutiny • Sports finals heating up • Health alerts updated</span>
+        </div>
+      </div>
+
+      <main class="content-wrap">
+        {{ content | safe }}
+      </main>
+
+      <footer class="site-footer">
+        <p>Generated with Eleventy • Public RSS feeds refreshed automatically</p>
+      </footer>
+    </div>
+
+    <script>
+      const searchInput = document.getElementById('news-search');
+      const searchableItems = document.querySelectorAll('[data-searchable]');
+      const navToggle = document.querySelector('.nav-toggle');
+      const mainNav = document.querySelector('.main-nav');
+
+      if (searchInput && searchableItems.length) {
+        searchInput.addEventListener('input', (event) => {
+          const query = event.target.value.trim().toLowerCase();
+
+          searchableItems.forEach((item) => {
+            const text = (item.dataset.searchable || item.textContent || '').toLowerCase();
+            const match = !query || text.includes(query);
+            item.style.display = match ? '' : 'none';
+          });
+        });
+      }
+
+      if (navToggle && mainNav) {
+        navToggle.addEventListener('click', () => {
+          const isOpen = mainNav.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        mainNav.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => {
+            mainNav.classList.remove('open');
+            navToggle.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+    </script>
   </body>
 </html>
