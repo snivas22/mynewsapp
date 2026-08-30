@@ -47,12 +47,12 @@ title: Home
 </section>
 
 <section class="breaking-stack">
-  {% set categories = [ 'politics','world','business','technology' ] %}
+  {% set categories = [ 'politics','world','business','technology','ai-trends' ] %}
   {% for cat in categories %}
     {% set items = collections[cat] %}
     {% if items and items.length > 0 %}
       <article class="headline-box">
-        <span class="mini-label {{ cat }}">{{ cat | title }}</span>
+        <span class="mini-label {{ cat }}">{{ cat | replace('-', ' ') | title }}</span>
         <a href="{{ items[0].url }}">{{ items[0].data.title }}</a>
       </article>
     {% endif %}
@@ -112,7 +112,7 @@ title: Home
   </article>
 </section>
 
-{% set categories = [ 'politics','world','business','technology','sports','entertainment','science','health' ] %}
+{% set categories = [ 'politics','world','business','technology','ai-trends','sports','entertainment','science','health','favourites' ] %}
 
 <section class="stats-row">
   {% for cat in categories %}
@@ -128,7 +128,7 @@ title: Home
     {% set items = collections[cat] %}
     <article class="category-card" style="--card-accent: var(--{{ cat }});" data-searchable="{{ cat }}{% for item in items %} {{ item.data.title }}{% endfor %}">
       <div class="category-head">
-        <span class="category-tag {{ cat }}">{{ cat | title }}</span>
+        <span class="category-tag {{ cat }}">{{ cat | replace('-', ' ') | title }}</span>
         <a href="{{ ('/categories/' + cat + '/') | url }}">View all</a>
       </div>
 

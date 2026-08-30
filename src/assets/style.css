@@ -18,6 +18,8 @@
   --entertainment: #ff7dbb;
   --science: #6fe7d7;
   --health: #7ae28d;
+  --ai-trends: #8ec5ff;
+  --favourites: #ffd166;
 }
 
 * { box-sizing: border-box; }
@@ -166,6 +168,39 @@ a:focus-visible {
 .main-nav a:hover {
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
+}
+
+.favorite-toggle {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.favorite-toggle:hover,
+.favorite-toggle:focus-visible {
+  background: rgba(255, 209, 102, 0.14);
+  border-color: rgba(255, 209, 102, 0.7);
+  transform: translateY(-1px);
+}
+
+.favorite-toggle.is-saved {
+  background: rgba(255, 209, 102, 0.18);
+  border-color: rgba(255, 209, 102, 0.9);
+  color: #fff7d6;
+}
+
+.story-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .nav-toggle {
@@ -783,8 +818,8 @@ a:focus-visible {
 .category-tag.sports { background: rgba(248, 113, 113, 0.12); color: var(--sports); }
 .category-tag.entertainment { background: rgba(251, 113, 133, 0.12); color: var(--entertainment); }
 .category-tag.science { background: rgba(45, 212, 191, 0.12); color: var(--science); }
-.category-tag.health { background: rgba(74, 222, 128, 0.12); color: var(--health); }
-
+.category-tag.health { background: rgba(74, 222, 128, 0.12); color: var(--health); }.category-tag.ai-trends { background: rgba(142, 197, 255, 0.12); color: var(--ai-trends); }
+.category-tag.favourites { background: rgba(255, 209, 102, 0.12); color: var(--favourites); }
 .category-head a {
   color: var(--accent);
   font-size: 0.8rem;

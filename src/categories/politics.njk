@@ -21,7 +21,10 @@ title: Politics
       </div>
       <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
       <p>{{ item.templateContent | striptags | truncate(180) }}</p>
-      <a class="read-more" href="{{ item.url }}">Read article →</a>
+      <div class="story-actions">
+        <a class="read-more" href="{{ item.url }}">Read article →</a>
+        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
+      </div>
     </article>
   {% endfor %}
 </div>

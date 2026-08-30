@@ -52,7 +52,14 @@ const feedsByCategory = {
     'https://www.theguardian.com/lifeandstyle/health-and-wellbeing/rss',
     'https://feeds.npr.org/1128/rss.xml',
     'https://www.aljazeera.com/xml/rss/all.xml'
-  ]
+  ],
+  'ai-trends': [
+    'https://feeds.bbci.co.uk/news/technology/rss.xml',
+    'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
+    'https://www.theguardian.com/technology/rss',
+    'https://www.theguardian.com/science/rss'
+  ],
+  favourites: []
 };
 
 function slugify(s) {

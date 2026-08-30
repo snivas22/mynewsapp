@@ -40,7 +40,9 @@
             <a href="{{ '/categories/world/' | url }}">World</a>
             <a href="{{ '/categories/business/' | url }}">Business</a>
             <a href="{{ '/categories/technology/' | url }}">Technology</a>
+            <a href="{{ '/categories/ai-trends/' | url }}">AI &amp; Trends</a>
             <a href="{{ '/categories/sports/' | url }}">Sports</a>
+            <a href="{{ '/categories/favourites/' | url }}">Favourites</a>
           </nav>
         </div>
       </header>
@@ -63,6 +65,81 @@
     </div>
 
     <script>
+      const STORAGE_KEY = 'newspulse-favourites';
+
+      function getFavourites() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function setFavourites(items) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      }
+
+      function saveFavourite(story) {
+        const items = getFavourites();
+        const exists = items.some((item) => item.url === story.url);
+        const next = exists ? items.filter((item) => item.url !== story.url) : [...items, story];
+        setFavourites(next);
+        updateFavouriteButtons();
+        renderFavouritePage();
+      }
+
+      function updateFavouriteButtons() {
+        const items = getFavourites();
+        const savedUrls = new Set(items.map((item) => item.url));
+
+        document.querySelectorAll('.favorite-toggle').forEach((button) => {
+          const url = button.dataset.url;
+          const saved = savedUrls.has(url);
+          button.textContent = saved ? 'Saved' : 'Save';
+          button.classList.toggle('is-saved', saved);
+          button.setAttribute('aria-pressed', saved ? 'true' : 'false');
+        });
+      }
+
+      function renderFavouritePage() {
+        const container = document.querySelector('[data-favourites-root]');
+        if (!container) return;
+
+        const favourites = getFavourites();
+        const list = document.querySelector('[data-favourites-list]');
+        const empty = document.querySelector('[data-favourites-empty]');
+
+        if (!list || !empty) return;
+
+        if (favourites.length === 0) {
+          list.innerHTML = '';
+          empty.hidden = false;
+          return;
+        }
+
+        empty.hidden = true;
+        list.innerHTML = favourites.map((story) => `
+          <li>
+            <a href="${story.url}" target="_blank" rel="noreferrer"><strong>${story.title}</strong></a>
+            <div class="meta">${story.date || ''} • ${story.source || 'Saved article'}</div>
+          </li>
+        `).join('');
+      }
+
+      document.addEventListener('click', (event) => {
+        const button = event.target.closest('.favorite-toggle');
+        if (!button) return;
+
+        const story = {
+          title: button.dataset.title || 'Saved story',
+          url: button.dataset.url,
+          source: button.dataset.source || 'Saved article',
+          date: button.dataset.date || ''
+        };
+
+        saveFavourite(story);
+      });
+
       const searchInput = document.getElementById('news-search');
       const searchableItems = document.querySelectorAll('[data-searchable]');
       const navToggle = document.querySelector('.nav-toggle');
@@ -93,6 +170,9 @@
           });
         });
       }
+
+      updateFavouriteButtons();
+      renderFavouritePage();
     </script>
   </body>
 </html>

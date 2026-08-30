@@ -1,11 +1,11 @@
-﻿---
+---
 layout: base.njk
-title: World
+title: AI & Trends
 ---
 
-<h2>World</h2>
+<h2>AI &amp; Trends</h2>
 <ul>
-{% set items = collections.world %}
+{% set items = collections['ai-trends'] %}
 {% for item in items %}
 <li>
   <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>

@@ -10,6 +10,7 @@ title: Business
 <li>
   <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
   <div class="meta">{{ item.date | readableDate }} • {{ item.data.source }}</div>
+  <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
 </li>
 {% endfor %}
 </ul>

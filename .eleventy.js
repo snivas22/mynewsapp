@@ -14,7 +14,7 @@ module.exports = function(eleventyConfig) {
     }
   });
 
-  const categories = ['politics','world','business','technology','sports','entertainment','science','health'];
+  const categories = ['politics','world','business','technology','sports','entertainment','science','health','ai-trends','favourites'];
   const articlesRoot = path.join(__dirname, 'src', 'articles');
 
   function parseFrontmatter(fileContent) {
