@@ -57,7 +57,8 @@ const feedsByCategory = {
     'https://feeds.bbci.co.uk/news/technology/rss.xml',
     'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
     'https://www.theguardian.com/technology/rss',
-    'https://www.theguardian.com/science/rss'
+    'https://www.theguardian.com/science/rss',
+    'https://www.theguardian.com/uk-news/rss'
   ],
   favourites: []
 };
@@ -106,6 +107,30 @@ async function fetchWithRetry(url, attempts = 3, timeoutMs = 20000) {
   }
 }
 
+function matchesAITrend(text) {
+  if (!text) return false;
+  const haystack = text.toLowerCase();
+
+  const aiMarkers = [
+    'artificial intelligence', 'ai ', 'ai.', 'ai,', 'machine learning', 'deep learning',
+    'large language model', 'llm', 'gpt', 'chatgpt', 'openai', 'anthropic', 'nvidia',
+    'gpu', 'chip', 'semiconductor', 'data centre', 'datacentre', 'robotics', 'humanoid',
+    'voice cloning', 'deepfake', 'genai', 'generative ai', 'cybersecurity', 'cyber security',
+    'automation', 'algorithmic', 'startup', 'ai model', 'ai regulation', 'ai safety', 'ai risk',
+    'meta', 'google', 'microsoft', 'apple', 'software', 'digital platform', 'telecoms', 'platform', 'model launch'
+  ];
+
+  const nonAiMarkers = [
+    'weather', 'storm', 'rain', 'flood', 'election', 'football', 'sport', 'climate',
+    'government', 'minister', 'parliament', 'crime', 'bank', 'health', 'hospital', 'medical',
+    'music', 'film', 'festival', 'celebrity', 'travel', 'migrant', 'ukraine', 'war', 'tiktok'
+  ];
+
+  const hasAi = aiMarkers.some(marker => haystack.includes(marker));
+  const hasNonAi = nonAiMarkers.some(marker => haystack.includes(marker));
+  return hasAi && !hasNonAi;
+}
+
 function dedupeArticles(items) {
   const seen = new Map();
   for (const entry of items) {
@@ -144,6 +169,12 @@ async function fetchAndWrite() {
           const summary = cleanText(item.contentSnippet || item.summary || item.content || '');
 
           if (!title || !link) continue;
+
+          const shouldKeep = category === 'ai-trends'
+            ? matchesAITrend(`${title} ${summary}`)
+            : true;
+
+          if (!shouldKeep) continue;
 
           collected.push({
             title,

@@ -50,8 +50,19 @@
       <div class="ticker-wrap" aria-label="Breaking news ticker">
         <div class="ticker-label">LIVE</div>
         <div class="ticker-track">
-          <span>Global markets shifting • AI regulation debate intensifies • Climate response under scrutiny • Sports finals heating up • Health alerts updated</span>
-          <span>Global markets shifting • AI regulation debate intensifies • Climate response under scrutiny • Sports finals heating up • Health alerts updated</span>
+          {% set liveCategories = ['politics','world','business','technology','ai-trends','sports','entertainment','science','health'] %}
+          {% for cat in liveCategories %}
+            {% set item = collections[cat][0] %}
+            {% if item %}
+              <span>{{ item.data.title }}</span>
+            {% endif %}
+          {% endfor %}
+          {% for cat in liveCategories %}
+            {% set item = collections[cat][0] %}
+            {% if item %}
+              <span>{{ item.data.title }}</span>
+            {% endif %}
+          {% endfor %}
         </div>
       </div>
 

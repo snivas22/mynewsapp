@@ -4,13 +4,20 @@ title: Technology
 ---
 
 <h2>Technology</h2>
-<ul>
-{% set items = collections.technology %}
-{% for item in items %}
-<li>
-  <a href="{{ item.url }}"><strong>{{ item.data.title }}</strong></a>
-  <div class="meta">{{ item.date | readableDate }} • {{ item.data.source }}</div>
-  <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
-</li>
-{% endfor %}
-</ul>
+<div class="story-grid">
+  {% set items = collections.technology %}
+  {% for item in items %}
+    <article class="story-card">
+      <div class="story-meta">
+        <span class="story-source technology">{{ item.data.source }}</span>
+        <span>{{ item.date | readableDate }}</span>
+      </div>
+      <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
+      <p>{{ item.templateContent | striptags | truncate(180) }}</p>
+      <div class="story-actions">
+        <a class="read-more" href="{{ item.url }}">Read article →</a>
+        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
+      </div>
+    </article>
+  {% endfor %}
+</div>
