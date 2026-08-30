@@ -872,6 +872,38 @@ a:focus-visible {
   line-height: 1.7;
 }
 
+.story-list.compact {
+  display: grid;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.story-list.compact li {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.story-list.compact li:hover {
+  border-color: rgba(94, 234, 212, 0.35);
+  background: rgba(255,255,255,0.04);
+}
+
+.story-list.compact a {
+  display: block;
+  color: var(--text);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.story-list.compact .meta {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
 .read-more {
   color: var(--accent);
   font-weight: 700;
