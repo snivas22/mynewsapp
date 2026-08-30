@@ -25,8 +25,8 @@ title: Home
       <p class="hero-copy">Track the latest reporting in politics, business, technology, sports, health, and more with a clean, readable dashboard.</p>
     {% endif %}
     <div class="hero-actions">
-      <a class="primary-btn" href="/categories/">Explore categories</a>
-      <a class="secondary-btn" href="/categories/politics/">Top story</a>
+      <a class="primary-btn" href="{{ '/categories/' | url }}">Explore categories</a>
+      <a class="secondary-btn" href="{{ '/categories/politics/' | url }}">Top story</a>
     </div>
   </div>
 
@@ -129,7 +129,7 @@ title: Home
     <article class="category-card" style="--card-accent: var(--{{ cat }});" data-searchable="{{ cat }}{% for item in items %} {{ item.data.title }}{% endfor %}">
       <div class="category-head">
         <span class="category-tag {{ cat }}">{{ cat | title }}</span>
-        <a href="/categories/{{ cat }}/">View all</a>
+        <a href="{{ ('/categories/' + cat + '/') | url }}">View all</a>
       </div>
 
       {% if items | length == 0 %}

@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="{{ '/assets/style.css' | url }}">
   </head>
   <body>
     <div class="page-shell">
@@ -17,7 +17,7 @@
           <span class="brand-mark">N</span>
           <div>
             <p class="brand-kicker">Live updates</p>
-            <h1><a href="/">NewsPulse</a></h1>
+            <h1><a href="{{ '/' | url }}">NewsPulse</a></h1>
           </div>
         </div>
 
@@ -34,13 +34,13 @@
           </button>
 
           <nav class="main-nav" aria-label="Main navigation">
-            <a href="/">Home</a>
-            <a href="/categories/">Categories</a>
-            <a href="/categories/politics/">Politics</a>
-            <a href="/categories/world/">World</a>
-            <a href="/categories/business/">Business</a>
-            <a href="/categories/technology/">Technology</a>
-            <a href="/categories/sports/">Sports</a>
+            <a href="{{ '/' | url }}">Home</a>
+            <a href="{{ '/categories/' | url }}">Categories</a>
+            <a href="{{ '/categories/politics/' | url }}">Politics</a>
+            <a href="{{ '/categories/world/' | url }}">World</a>
+            <a href="{{ '/categories/business/' | url }}">Business</a>
+            <a href="{{ '/categories/technology/' | url }}">Technology</a>
+            <a href="{{ '/categories/sports/' | url }}">Sports</a>
           </nav>
         </div>
       </header>

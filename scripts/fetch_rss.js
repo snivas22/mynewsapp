@@ -7,32 +7,41 @@ const parser = new Parser();
 const feedsByCategory = {
   politics: [
     'https://feeds.bbci.co.uk/news/politics/rss.xml',
-    'https://www.theguardian.com/politics/rss'
+    'https://www.theguardian.com/politics/rss',
+    'https://www.theguardian.com/us-news/rss'
   ],
   world: [
     'https://feeds.bbci.co.uk/news/world/rss.xml',
-    'https://rss.cnn.com/rss/edition_world.rss'
+    'https://www.theguardian.com/world/rss',
+    'https://www.theguardian.com/us-news/rss'
   ],
   business: [
     'https://feeds.bbci.co.uk/news/business/rss.xml',
-    'https://rss.cnn.com/rss/edition_business.rss'
+    'https://www.theguardian.com/business/rss',
+    'https://www.theguardian.com/technology/rss'
   ],
   technology: [
     'https://feeds.bbci.co.uk/news/technology/rss.xml',
-    'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml'
+    'https://www.theguardian.com/technology/rss',
+    'https://www.theguardian.com/uk/technology/rss'
   ],
   sports: [
     'https://feeds.bbci.co.uk/sport/rss.xml?edition=uk',
-    'https://rss.cnn.com/rss/edition_sport.rss'
+    'https://www.theguardian.com/sport/rss',
+    'https://feeds.bbci.co.uk/sport/formula1/rss.xml'
   ],
   entertainment: [
-    'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml'
+    'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml',
+    'https://www.theguardian.com/film/rss',
+    'https://www.theguardian.com/music/rss'
   ],
   science: [
-    'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml'
+    'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
+    'https://www.theguardian.com/science/rss'
   ],
   health: [
-    'https://feeds.bbci.co.uk/news/health/rss.xml'
+    'https://feeds.bbci.co.uk/news/health/rss.xml',
+    'https://www.theguardian.com/lifeandstyle/health-and-wellbeing/rss'
   ]
 };
 

@@ -29,6 +29,7 @@ module.exports = function(eleventyConfig) {
       layouts: 'layouts',
       output: '_site'
     },
+    pathPrefix: '/mynewsapp/',
     markdownTemplateEngine: 'njk',
     htmlTemplateEngine: 'njk'
   };
