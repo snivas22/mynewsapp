@@ -10,7 +10,7 @@
   --accent-2: #1e5ae8;
   --line: rgba(30, 90, 232, 0.14);
   --shadow: 0 24px 50px rgba(20, 35, 59, 0.12);
-  --headline: Georgia, 'Times New Roman', serif;
+  --headline: 'Cormorant Garamond', Georgia, serif;
   --politics: #d97706;
   --world: #2563eb;
   --business: #16a34a;
@@ -91,14 +91,15 @@ a:focus-visible {
   justify-content: space-between;
   gap: 20px;
   padding: 18px 24px;
-  background: linear-gradient(135deg, rgba(11, 18, 32, 0.95), rgba(19, 44, 87, 0.92), rgba(44, 62, 97, 0.9));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(13, 20, 35, 0.98), rgba(25, 50, 90, 0.96), rgba(39, 59, 82, 0.94));
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 20px;
   backdrop-filter: blur(14px);
   box-shadow: 0 18px 34px rgba(9, 14, 24, 0.22);
   position: sticky;
   top: 16px;
   z-index: 10;
+  border-top: 4px solid var(--accent);
 }
 
 .top-actions {
@@ -139,15 +140,18 @@ a:focus-visible {
 }
 
 .brand-mark {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #ffffff;
   font-weight: 800;
-  box-shadow: 0 12px 22px rgba(30, 90, 232, 0.18);
+  box-shadow: 0 12px 22px rgba(30, 90, 232, 0.2);
+  border: 1px solid rgba(255,255,255,0.18);
+  font-family: var(--headline);
+  font-size: 1.6rem;
 }
 
 .brand-kicker {
@@ -160,10 +164,11 @@ a:focus-visible {
 
 .brand-wrap h1 {
   margin: 0;
-  line-height: 1.1;
-  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  line-height: 0.9;
+  font-size: clamp(1.8rem, 2.7vw, 2.6rem);
   font-family: var(--headline);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.06em;
+  font-weight: 700;
 }
 
 .brand-wrap h1 a {
@@ -343,12 +348,13 @@ a:focus-visible {
   margin-bottom: 18px;
   min-height: 280px;
   background:
-    radial-gradient(circle at top right, rgba(255, 176, 51, 0.14), transparent 24%),
-    radial-gradient(circle at bottom left, rgba(30, 90, 232, 0.18), transparent 28%),
-    linear-gradient(135deg, rgba(15, 27, 45, 0.96), rgba(26, 42, 70, 0.94), rgba(38, 58, 85, 0.9));
+    radial-gradient(circle at top right, rgba(255, 176, 51, 0.18), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(30, 90, 232, 0.24), transparent 28%),
+    linear-gradient(135deg, rgba(9, 18, 32, 0.98), rgba(23, 41, 66, 0.96), rgba(43, 62, 87, 0.94));
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 28px 60px rgba(9, 15, 24, 0.26);
+  box-shadow: 0 28px 60px rgba(9, 15, 24, 0.28);
   overflow: hidden;
+  border-top: 5px solid var(--accent);
 }
 
 .hero-panel::after {
@@ -562,8 +568,8 @@ a:focus-visible {
   justify-content: flex-end;
   border-radius: 20px;
   border: 1px solid rgba(30, 90, 232, 0.12);
-  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(230, 238, 255, 0.7), rgba(255, 242, 242, 0.7));
-  box-shadow: 0 18px 28px rgba(20, 35, 59, 0.08);
+  background: linear-gradient(135deg, rgba(9, 18, 32, 0.96), rgba(19, 44, 87, 0.9), rgba(220, 61, 45, 0.72));
+  box-shadow: 0 18px 28px rgba(20, 35, 59, 0.1);
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
@@ -627,8 +633,8 @@ a:focus-visible {
 
 .feature-tile h3 {
   margin: 0 0 10px;
-  font-size: clamp(1.35rem, 2vw, 2rem);
-  line-height: 1.08;
+  font-size: clamp(1.45rem, 2vw, 2.3rem);
+  line-height: 1.02;
   letter-spacing: -0.04em;
   color: #f5f8ff;
   font-family: var(--headline);
@@ -649,6 +655,8 @@ a:focus-visible {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 700;
+  border-bottom: 2px solid rgba(220, 61, 45, 0.18);
+  padding-bottom: 6px;
 }
 
 .mini-label.politics { color: var(--politics); }
@@ -740,10 +748,11 @@ a:focus-visible {
   align-items: center;
   gap: 12px;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(243,246,255,0.86));
+  background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(243,246,255,0.88));
   border: 1px solid rgba(30, 90, 232, 0.12);
   box-shadow: 0 12px 26px rgba(30, 90, 232, 0.06);
   padding: 18px 20px;
+  border-left: 4px solid var(--accent);
 }
 
 .status-dot {
@@ -804,6 +813,7 @@ a:focus-visible {
   overflow: hidden;
   min-height: 220px;
   box-shadow: 0 16px 28px rgba(19, 35, 59, 0.05);
+  border-top: 2px solid rgba(220, 61, 45, 0.12);
 }
 
 .category-card::before,
