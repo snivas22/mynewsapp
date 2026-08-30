@@ -10,6 +10,7 @@
   --accent-2: #1e5ae8;
   --line: rgba(30, 90, 232, 0.14);
   --shadow: 0 24px 50px rgba(20, 35, 59, 0.12);
+  --headline: Georgia, 'Times New Roman', serif;
   --politics: #d97706;
   --world: #2563eb;
   --business: #16a34a;
@@ -27,7 +28,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
   background:
     radial-gradient(circle at top left, rgba(30, 90, 232, 0.12), transparent 22%),
     radial-gradient(circle at bottom right, rgba(220, 61, 45, 0.12), transparent 25%),
@@ -161,6 +162,8 @@ a:focus-visible {
   margin: 0;
   line-height: 1.1;
   font-size: clamp(1.3rem, 2vw, 1.8rem);
+  font-family: var(--headline);
+  letter-spacing: -0.04em;
 }
 
 .brand-wrap h1 a {
@@ -384,6 +387,7 @@ a:focus-visible {
   line-height: 0.97;
   letter-spacing: -0.06em;
   font-weight: 800;
+  font-family: var(--headline);
 }
 
 .hero-panel h2 a {
@@ -627,6 +631,7 @@ a:focus-visible {
   line-height: 1.08;
   letter-spacing: -0.04em;
   color: #f5f8ff;
+  font-family: var(--headline);
   text-shadow: 0 8px 26px rgba(0,0,0,0.3);
 }
 
@@ -759,7 +764,7 @@ a:focus-visible {
   gap: 14px;
   margin-bottom: 22px;
   padding-top: 10px;
-  border-top: 2px solid rgba(30, 90, 232, 0.12);
+  border-top: 3px solid rgba(220, 61, 45, 0.18);
 }
 
 .stat-card {
@@ -794,10 +799,11 @@ a:focus-visible {
   position: relative;
   padding: 18px 18px 16px;
   transition: transform 0.2s ease, border-color 0.2s ease;
-  border-left: 3px solid var(--card-accent, var(--accent));
+  border-left: 4px solid var(--card-accent, var(--accent));
   background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(240,247,255,0.95));
   overflow: hidden;
   min-height: 220px;
+  box-shadow: 0 16px 28px rgba(19, 35, 59, 0.05);
 }
 
 .category-card::before,
@@ -925,6 +931,7 @@ a:focus-visible {
   margin: 0 0 12px;
   line-height: 1.4;
   font-size: 1.2rem;
+  font-family: var(--headline);
 }
 
 .story-card p {
