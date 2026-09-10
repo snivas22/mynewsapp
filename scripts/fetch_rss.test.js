@@ -1,7 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const pkg = require('../package.json');
 
 const { normalizeRegionToken, mergeCategoryArticles, resolveArticleCountry } = require('./fetch_rss.js');
+
+test('npm ci should not trigger live fetch/build during install', () => {
+  assert.equal(pkg.scripts.prepare, undefined);
+});
 
 test('normalizeRegionToken keeps Hyderabad, Telangana and Andhra Pradesh distinct', () => {
   assert.equal(normalizeRegionToken('india'), 'india');
