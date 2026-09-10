@@ -189,14 +189,39 @@ function matchesAITrend(text) {
   return hasAi && !hasNonAi;
 }
 
-function inferCountry(text, source, url) {
-  const haystack = `${text || ''} ${source || ''} ${url || ''}`.toLowerCase();
+function resolveArticleCountry(category, feedUrl, title, summary) {
+  const urlValue = String(feedUrl || '').toLowerCase();
+  const textValue = String(`${title || ''} ${summary || ''}`).toLowerCase();
+  const haystack = `${textValue} ${urlValue}`.toLowerCase();
 
-  const countryChecks = [
+  const regionalPriority = [
     ['hyderabad', /(hyderabad|secunderabad|begumpet|charminar|ghmc|hyderabad city)/],
     ['telangana', /(telangana|warangal|nizamabad|rangareddy|ghmc|secunderabad)/],
     ['andhra-pradesh', /(andhra pradesh|andhra|vijayawada|amaravati|visakhapatnam|guntur|nellore)/],
-    ['india', /(\bindia\b|mumbai|delhi|modi|bengaluru|new delhi|gujarat|bangalore|india's)/],
+    ['india', /(\bindia\b|mumbai|delhi|modi|bengaluru|new delhi|gujarat|bangalore|india's)/]
+  ];
+
+  if (category === 'daily-briefing' || category === 'india' || category === 'andhra-pradesh' || category === 'telangana' || category === 'hyderabad') {
+    const sourceRegion = [
+      ['hyderabad', /hyderabad/],
+      ['telangana', /telangana/],
+      ['andhra-pradesh', /andhra\s*pradesh|andhra/],
+      ['india', /india/]
+    ].find(([_, regex]) => regex.test(urlValue) || regex.test(textValue));
+
+    if (sourceRegion) {
+      const [region] = sourceRegion;
+      if (region === 'hyderabad' && urlValue.includes('telangana')) return 'telangana';
+      if (region === 'telangana' && urlValue.includes('hyderabad') && category === 'hyderabad') return 'hyderabad';
+      return region;
+    }
+
+    for (const [region, regex] of regionalPriority) {
+      if (regex.test(haystack)) return region;
+    }
+  }
+
+  const countryChecks = [
     ['uk', /(uk|united kingdom|britain|england|scotland|wales|northern ireland|london|parliament|government|westminster|downing street|brexit)/],
     ['us', /(us|united states|usa|washington|california|texas|new york|washington dc|federal|congress|white house|senate)/],
     ['australia', /(australia|sydney|melbourne|canberra|australian|queensland|nsw|victoria)/],
@@ -208,6 +233,10 @@ function inferCountry(text, source, url) {
   }
 
   return 'global';
+}
+
+function inferCountry(text, source, url) {
+  return resolveArticleCountry('global', url, text, source);
 }
 
 function dedupeArticles(items) {
@@ -301,7 +330,7 @@ async function fetchAndWrite() {
 
           if (!title || !link) continue;
 
-          const country = inferCountry(`${title} ${summary}`, source, link);
+          const country = resolveArticleCountry(category, feedUrl, title, summary);
 
           const shouldKeep = category === 'ai-trends'
             ? matchesAITrend(`${title} ${summary}`)
@@ -357,6 +386,7 @@ if (require.main === module) {
 module.exports = {
   normalizeRegionToken,
   mergeCategoryArticles,
+  resolveArticleCountry,
   inferCountry,
   fetchAndWrite
 };
