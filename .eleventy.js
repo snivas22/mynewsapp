@@ -4,8 +4,15 @@ const path = require('path');
 module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/assets');
 
+  const now = new Date();
   eleventyConfig.addGlobalData('site', {
-    lastUpdated: new Date().toISOString(),
+    lastUpdated: now.toISOString(),
+    currentDateLabel: now.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    }),
     countries: [
       { slug: 'uk', label: 'United Kingdom' },
       { slug: 'us', label: 'United States' },

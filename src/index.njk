@@ -5,8 +5,32 @@ title: Home
 
 <section class="masthead-row" aria-label="Newsroom masthead">
   <div class="edition-tag">Global edition</div>
-  <div class="masthead-date">Friday • August 30 • 2026</div>
+  <div class="masthead-date">{{ site.currentDateLabel }}</div>
   <div class="live-bell">LIVE DESK</div>
+</section>
+
+<section class="regional-desk" aria-label="Regional desk overview">
+  <div class="regional-head">
+    <p class="eyebrow">Regional desk</p>
+    <h3>India and state updates</h3>
+  </div>
+
+  <div class="region-grid">
+    {% set regionalLinks = [
+      { slug: 'india', label: 'India', count: collections.india | length },
+      { slug: 'andhra-pradesh', label: 'Andhra Pradesh', count: collections['andhra-pradesh'] | length },
+      { slug: 'telangana', label: 'Telangana', count: collections.telangana | length },
+      { slug: 'hyderabad', label: 'Hyderabad', count: collections.hyderabad | length },
+      { slug: 'daily-briefing', label: 'Daily briefing', count: collections['daily-briefing'] | length }
+    ] %}
+
+    {% for region in regionalLinks %}
+      <a class="region-link" href="{{ ('/countries/' + region.slug + '/') | url if region.slug in ['india','andhra-pradesh','telangana','hyderabad'] else ('/categories/' + region.slug + '/') | url }}">
+        <span class="region-name">{{ region.label }}</span>
+        <strong>{{ region.count }} stories</strong>
+      </a>
+    {% endfor %}
+  </div>
 </section>
 
 <section class="hero-panel">
