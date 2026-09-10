@@ -4,14 +4,14 @@ title: Politics
 ---
 
 <section class="page-header">
-  <p class="eyebrow">Live category feed</p>
-  <h2>Politics</h2>
+  <p class="eyebrow" data-i18n="liveCategoryFeed">లైవ్ కేటగిరీ ఫీడ్</p>
+  <h2 data-i18n="categoryPolitics">రాజకీయాలు</h2>
 </section>
 
 <div class="story-grid">
   {% set items = collections.politics %}
   {% if items | length == 0 %}
-    <div class="empty-panel">No politics articles are available yet.</div>
+    <div class="empty-panel" data-i18n="noStories">ఇంకా కథనాలు లేవు.</div>
   {% endif %}
   {% for item in items %}
     <article class="story-card featured-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
@@ -22,8 +22,8 @@ title: Politics
       <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
       <p>{{ item.templateContent | striptags | truncate(180) }}</p>
       <div class="story-actions">
-        <a class="read-more" href="{{ item.url }}">Read article →</a>
-        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
+        <a class="read-more" href="{{ item.url }}" data-i18n="readArticle">కథనాన్ని చదవండి</a>
+        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites" data-i18n="save">సేవ్ చేయండి</button>
       </div>
     </article>
   {% endfor %}

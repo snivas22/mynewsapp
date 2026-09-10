@@ -2,9 +2,12 @@
 layout: base.njk
 ---
 
-<article>
-  <h2>{{ title }}</h2>
-  <div class="meta">{{ date | readableDate }} • {{ source }}</div>
-  <div class="content">{{ content | safe }}</div>
-  {% if original_link %}<p><a href="{{ original_link }}">Read original</a></p>{% endif %}
+<article class="article-reader">
+  <header class="article-header">
+    <p class="eyebrow" data-i18n="liveCategoryFeed">లైవ్ కేటగిరీ ఫీడ్</p>
+    <h2>{{ title }}</h2>
+    <div class="meta">{{ date | readableDate }} • {{ source }}</div>
+  </header>
+  <div class="content article-content">{{ content | safe }}</div>
+  {% if original_link %}<p class="article-cta"><a href="{{ original_link }}" data-i18n="readOriginal">అసలు చదవండి</a></p>{% endif %}
 </article>

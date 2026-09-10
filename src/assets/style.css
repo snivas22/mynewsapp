@@ -28,7 +28,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Noto Sans Telugu', 'Segoe UI', sans-serif;
   background:
     radial-gradient(circle at top left, rgba(30, 90, 232, 0.12), transparent 22%),
     radial-gradient(circle at bottom right, rgba(220, 61, 45, 0.12), transparent 25%),
@@ -50,6 +50,32 @@ body::before {
     transparent 4px
   );
   opacity: 0.8;
+}
+
+.article-reader {
+  padding: 24px 26px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.article-header {
+  margin-bottom: 20px;
+}
+
+.article-content {
+  color: var(--text);
+  line-height: 1.9;
+  font-size: 1.08rem;
+}
+
+.article-content p {
+  margin: 0 0 1.2rem;
+}
+
+.article-cta {
+  margin-top: 20px;
 }
 
 img { max-width: 100%; }

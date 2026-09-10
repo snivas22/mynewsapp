@@ -13,7 +13,7 @@ title: Daily Briefing
   {% set topItem = collections['daily-briefing'][0] %}
   {% if topItem %}
     <article class="regional-feature">
-      <span class="mini-label">Top update</span>
+      <span class="mini-label" data-i18n="topStory">టాప్ స్టోరీ</span>
       <h3><a href="{{ topItem.url }}">{{ topItem.data.title }}</a></h3>
       <p>{{ topItem.templateContent | striptags | truncate(180) }}</p>
     </article>
@@ -23,7 +23,7 @@ title: Daily Briefing
 <div class="story-grid">
   {% set items = collections['daily-briefing'] %}
   {% if items | length == 0 %}
-    <div class="empty-panel">No daily briefing stories are available yet.</div>
+    <div class="empty-panel" data-i18n="noStories">ఇంకా కథనాలు లేవు.</div>
   {% endif %}
   {% for item in items %}
     <article class="story-card featured-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
@@ -34,8 +34,8 @@ title: Daily Briefing
       <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
       <p>{{ item.templateContent | striptags | truncate(180) }}</p>
       <div class="story-actions">
-        <a class="read-more" href="{{ item.url }}">Read article →</a>
-        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
+        <a class="read-more" href="{{ item.url }}" data-i18n="readArticle">కథనాన్ని చదవండి</a>
+        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites" data-i18n="save">సేవ్ చేయండి</button>
       </div>
     </article>
   {% endfor %}

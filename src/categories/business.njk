@@ -3,7 +3,7 @@ layout: base.njk
 title: Business
 ---
 
-<h2>Business</h2>
+<h2 data-i18n="categoryBusiness">వ్యాపారం</h2>
 <div class="story-grid">
   {% set items = collections.business %}
   {% for item in items %}
@@ -15,8 +15,8 @@ title: Business
       <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
       <p>{{ item.templateContent | striptags | truncate(180) }}</p>
       <div class="story-actions">
-        <a class="read-more" href="{{ item.url }}">Read article →</a>
-        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
+        <a class="read-more" href="{{ item.url }}" data-i18n="readArticle">కథనాన్ని చదవండి</a>
+        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites" data-i18n="save">సేవ్ చేయండి</button>
       </div>
     </article>
   {% endfor %}
