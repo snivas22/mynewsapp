@@ -89,12 +89,57 @@
       </main>
 
       <footer class="site-footer">
-        <p>Generated with Eleventy • Public RSS feeds refreshed automatically • Last refreshed {{ site.lastUpdated | readableDate }}</p>
+        <p>Generated with Eleventy • Public RSS feeds refreshed automatically • Last refreshed <span data-last-updated="{{ site.lastUpdated }}">just now</span></p>
       </footer>
     </div>
 
     <script>
       const STORAGE_KEY = 'newspulse-favourites';
+      const countryLabels = {
+        global: 'Global',
+        uk: 'United Kingdom',
+        us: 'United States',
+        india: 'India',
+        'andhra-pradesh': 'Andhra Pradesh',
+        telangana: 'Telangana',
+        hyderabad: 'Hyderabad',
+        australia: 'Australia',
+        uae: 'UAE'
+      };
+
+      function formatCountryLabel(value) {
+        const country = String(value || 'global').trim().toLowerCase();
+        if (countryLabels[country]) return countryLabels[country];
+        return country.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+      }
+
+      function addRegionBadges() {
+        document.querySelectorAll('.story-card').forEach((card) => {
+          const country = (card.dataset.country || 'global').toLowerCase();
+          if (card.querySelector('.story-region-badge')) return;
+
+          const badge = document.createElement('span');
+          badge.className = 'story-region-badge';
+          badge.textContent = formatCountryLabel(country);
+
+          const meta = card.querySelector('.story-meta');
+          if (meta) {
+            meta.appendChild(badge);
+          }
+        });
+      }
+
+      function updateLastUpdatedLabel() {
+        const el = document.querySelector('[data-last-updated]');
+        if (!el) return;
+
+        const iso = el.dataset.lastUpdated;
+        if (!iso) return;
+
+        const updatedAt = new Date(iso);
+        const diffMinutes = Math.max(0, Math.round((Date.now() - updatedAt.getTime()) / 60000));
+        el.textContent = diffMinutes <= 1 ? 'just now' : `${diffMinutes} minutes ago`;
+      }
 
       function getFavourites() {
         try {
@@ -292,6 +337,8 @@
 
       updateFavouriteButtons();
       renderFavouritePage();
+      addRegionBadges();
+      updateLastUpdatedLabel();
     </script>
   </body>
 </html>

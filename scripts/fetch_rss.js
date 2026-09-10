@@ -61,31 +61,31 @@ const feedsByCategory = {
     'https://www.theguardian.com/uk-news/rss'
   ],
   india: [
-    'https://news.google.com/rss/search?q=India+news',
-    'https://timesofindia.indiatimes.com/rss/india.cms',
-    'https://www.thehindu.com/news/national/feeder/default.rss',
-    'https://www.ndtv.com/rss/india.xml'
+    'https://news.google.com/rss/search?q=India+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=India+government+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=India+business+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=India+technology+news&hl=en-IN&gl=IN&ceid=IN:en'
   ],
   'andhra-pradesh': [
-    'https://news.google.com/rss/search?q=Andhra+Pradesh+news',
-    'https://news.google.com/rss/search?q=Vijayawada+news',
-    'https://www.thehindu.com/news/national/andhra-pradesh/feeder/default.rss'
+    'https://news.google.com/rss/search?q=Andhra+Pradesh+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Vijayawada+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Visakhapatnam+news&hl=en-IN&gl=IN&ceid=IN:en'
   ],
   telangana: [
-    'https://news.google.com/rss/search?q=Telangana+news',
-    'https://news.google.com/rss/search?q=Hyderabad+Telangana+news',
-    'https://www.thehindu.com/news/national/telangana/feeder/default.rss'
+    'https://news.google.com/rss/search?q=Telangana+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Hyderabad+Telangana+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Warangal+news&hl=en-IN&gl=IN&ceid=IN:en'
   ],
   hyderabad: [
-    'https://news.google.com/rss/search?q=Hyderabad+news',
-    'https://news.google.com/rss/search?q=Hyderabad+city+news',
-    'https://www.thehindu.com/news/cities/Hyderabad/feeder/default.rss'
+    'https://news.google.com/rss/search?q=Hyderabad+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Hyderabad+city+news&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=GHMC+Hyderabad+news&hl=en-IN&gl=IN&ceid=IN:en'
   ],
   'daily-briefing': [
-    'https://news.google.com/rss/search?q=India+daily+briefing',
-    'https://news.google.com/rss/search?q=Hyderabad+daily+briefing',
-    'https://news.google.com/rss/search?q=Telangana+daily+briefing',
-    'https://news.google.com/rss/search?q=Andhra+Pradesh+daily+briefing'
+    'https://news.google.com/rss/search?q=India+daily+briefing&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Hyderabad+daily+briefing&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Telangana+daily+briefing&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Andhra+Pradesh+daily+briefing&hl=en-IN&gl=IN&ceid=IN:en'
   ],
   favourites: []
 };

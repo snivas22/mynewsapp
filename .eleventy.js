@@ -37,6 +37,23 @@ module.exports = function(eleventyConfig) {
     });
   });
 
+  eleventyConfig.addFilter('countryLabel', (value) => {
+    const country = String(value || 'global').trim().toLowerCase();
+    const labels = {
+      global: 'Global',
+      uk: 'United Kingdom',
+      us: 'United States',
+      india: 'India',
+      'andhra-pradesh': 'Andhra Pradesh',
+      telangana: 'Telangana',
+      hyderabad: 'Hyderabad',
+      australia: 'Australia',
+      uae: 'UAE'
+    };
+
+    return labels[country] || country.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+  });
+
   const categories = ['politics','world','business','technology','sports','entertainment','science','health','ai-trends','india','andhra-pradesh','telangana','hyderabad','daily-briefing','favourites'];
   const articlesRoot = path.join(__dirname, 'src', 'articles');
 
@@ -103,10 +120,12 @@ module.exports = function(eleventyConfig) {
   const countrySlugs = ['uk', 'us', 'india', 'andhra-pradesh', 'telangana', 'hyderabad', 'australia', 'uae'];
   countrySlugs.forEach((country) => {
     eleventyConfig.addCollection(`country_${country}`, (collectionApi) =>
-      collectionApi.getAll().filter((item) => {
-        const itemCountry = String(item?.data?.country || item?.country || '').trim().toLowerCase() || 'global';
-        return itemCountry === country;
-      })
+      collectionApi.getAll()
+        .filter((item) => {
+          const itemCountry = String(item?.data?.country || item?.country || '').trim().toLowerCase() || 'global';
+          return itemCountry === country;
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
     );
   });
 
