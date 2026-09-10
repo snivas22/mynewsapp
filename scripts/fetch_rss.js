@@ -99,6 +99,37 @@ function slugify(s) {
     .slice(0, 120);
 }
 
+function normalizeRegionToken(value) {
+  const raw = String(value || '').trim().toLowerCase();
+  if (!raw) return 'global';
+
+  const normalized = raw
+    .replace(/&/g, ' and ')
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const aliases = {
+    'united kingdom': 'uk',
+    'uk': 'uk',
+    'usa': 'us',
+    'united states': 'us',
+    'us': 'us',
+    'india': 'india',
+    'andhra pradesh': 'andhra-pradesh',
+    'andhra': 'andhra-pradesh',
+    'telangana': 'telangana',
+    'hyderabad': 'hyderabad',
+    'australia': 'australia',
+    'uae': 'uae',
+    'united arab emirates': 'uae',
+    'dubai': 'uae',
+    'abu dhabi': 'uae'
+  };
+
+  return aliases[normalized] || normalized.replace(/\s+/g, '-');
+}
+
 function cleanText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
@@ -162,12 +193,12 @@ function inferCountry(text, source, url) {
   const haystack = `${text || ''} ${source || ''} ${url || ''}`.toLowerCase();
 
   const countryChecks = [
+    ['hyderabad', /(hyderabad|secunderabad|begumpet|charminar|ghmc|hyderabad city)/],
+    ['telangana', /(telangana|warangal|nizamabad|rangareddy|ghmc|secunderabad)/],
+    ['andhra-pradesh', /(andhra pradesh|andhra|vijayawada|amaravati|visakhapatnam|guntur|nellore)/],
+    ['india', /(\bindia\b|mumbai|delhi|modi|bengaluru|new delhi|gujarat|bangalore|india's)/],
     ['uk', /(uk|united kingdom|britain|england|scotland|wales|northern ireland|london|parliament|government|westminster|downing street|brexit)/],
     ['us', /(us|united states|usa|washington|california|texas|new york|washington dc|federal|congress|white house|senate)/],
-    ['india', /(india|mumbai|delhi|modi|bengaluru|hyderabad|new delhi|gujarat|bangalore|india's)/],
-    ['andhra-pradesh', /(andhra pradesh|andhra|vijayawada|amaravati|visakhapatnam|guntur|nellore)/],
-    ['telangana', /(telangana|hyderabad|secunderabad|warangal|nizamabad|rangareddy|ghmc)/],
-    ['hyderabad', /(hyderabad|secunderabad|begumpet|charminar|ghmc|hyderabad city)/],
     ['australia', /(australia|sydney|melbourne|canberra|australian|queensland|nsw|victoria)/],
     ['uae', /(uae|dubai|abu dhabi|emirates|united arab emirates|sharjah|ajman|ras al khaimah)/]
   ];
@@ -189,18 +220,70 @@ function dedupeArticles(items) {
   return Array.from(seen.values());
 }
 
+function mergeCategoryArticles(existing = [], incoming = [], limit = 80) {
+  const merged = new Map();
+
+  for (const article of [...existing, ...incoming]) {
+    if (!article || !article.link || !article.title) continue;
+    const key = `${article.link}|${article.title}`;
+    if (!merged.has(key)) {
+      merged.set(key, {
+        ...article,
+        country: normalizeRegionToken(article.country || article.region || 'global')
+      });
+    }
+  }
+
+  return Array.from(merged.values())
+    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+    .slice(0, limit);
+}
+
+function readExistingCategoryArticles(categoryDir) {
+  if (!fs.existsSync(categoryDir)) return [];
+
+  return fs.readdirSync(categoryDir)
+    .filter(file => file.endsWith('.md'))
+    .map((file) => {
+      const fullPath = path.join(categoryDir, file);
+      const content = fs.readFileSync(fullPath, 'utf8');
+      const match = content.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);
+      if (!match) return null;
+
+      const data = {};
+      for (const line of match[1].split(/\r?\n/)) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const idx = trimmed.indexOf(':');
+        if (idx === -1) continue;
+        const key = trimmed.slice(0, idx).trim();
+        const value = trimmed.slice(idx + 1).trim();
+        data[key] = value.replace(/^"|"$/g, '').replace(/^'|'$/g, '');
+      }
+
+      const title = cleanText(data.title || file.replace(/\.md$/, '').replace(/-/g, ' '));
+      const link = cleanText(data.original_link || '#');
+      const source = cleanText(data.source || 'Open source feed');
+      const date = data.date || new Date().toISOString();
+      const country = normalizeRegionToken(data.country || 'global');
+
+      return { title, link, source, date, country, category: data.category || 'general' };
+    })
+    .filter(Boolean);
+}
+
 async function fetchAndWrite() {
   const articlesDir = path.join(__dirname, '..', 'src', 'articles');
   fs.mkdirSync(articlesDir, { recursive: true });
 
   for (const category of Object.keys(feedsByCategory)) {
     const categoryDir = path.join(articlesDir, category);
-    fs.rmSync(categoryDir, { recursive: true, force: true });
     fs.mkdirSync(categoryDir, { recursive: true });
   }
 
   for (const [category, feeds] of Object.entries(feedsByCategory)) {
     const categoryDir = path.join(articlesDir, category);
+    const existingArticles = readExistingCategoryArticles(categoryDir);
     const collected = [];
 
     for (const feedUrl of feeds) {
@@ -241,24 +324,39 @@ async function fetchAndWrite() {
       }
     }
 
-    const uniqueArticles = dedupeArticles(collected).slice(0, 15);
+    const mergedArticles = mergeCategoryArticles(existingArticles, dedupeArticles(collected), category === 'favourites' ? 40 : 120);
     let count = 0;
 
-    for (const article of uniqueArticles) {
+    for (const article of mergedArticles) {
       const slug = slugify(`${article.title}-${article.link}`);
       const filename = path.join(categoryDir, `${slug}.md`);
-      const body = article.summary ? article.summary : 'No summary available.';
-      const md = `---\ntitle: "${escapeFrontmatter(article.title)}"\ndate: "${article.date}"\ncategory: "${article.category}"\nsource: "${escapeFrontmatter(article.source)}"\noriginal_link: "${escapeFrontmatter(article.link)}"\ncountry: "${escapeFrontmatter(article.country || 'global')}"\n---\n\n${body}\n\n[Read original article](${article.link})\n`;
+      const body = article.summary || 'No summary available.';
+      const md = `---\ntitle: "${escapeFrontmatter(article.title)}"\ndate: "${article.date}"\ncategory: "${article.category}"\nsource: "${escapeFrontmatter(article.source)}"\noriginal_link: "${escapeFrontmatter(article.link)}"\ncountry: "${escapeFrontmatter(normalizeRegionToken(article.country || 'global'))}"\n---\n\n${body}\n\n[Read original article](${article.link})\n`;
 
       fs.writeFileSync(filename, md, 'utf8');
       count++;
     }
 
+    const validSlugs = new Set(mergedArticles.map(article => slugify(`${article.title}-${article.link}`)));
+    fs.readdirSync(categoryDir)
+      .filter(file => file.endsWith('.md'))
+      .filter(file => !validSlugs.has(file.replace(/\.md$/, '')))
+      .forEach(file => fs.unlinkSync(path.join(categoryDir, file)));
+
     console.log(`Wrote ${count} articles for category ${category}`);
   }
 }
 
-fetchAndWrite().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+if (require.main === module) {
+  fetchAndWrite().catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  normalizeRegionToken,
+  mergeCategoryArticles,
+  inferCountry,
+  fetchAndWrite
+};
