@@ -60,6 +60,33 @@ const feedsByCategory = {
     'https://www.theguardian.com/science/rss',
     'https://www.theguardian.com/uk-news/rss'
   ],
+  india: [
+    'https://news.google.com/rss/search?q=India+news',
+    'https://timesofindia.indiatimes.com/rss/india.cms',
+    'https://www.thehindu.com/news/national/feeder/default.rss',
+    'https://www.ndtv.com/rss/india.xml'
+  ],
+  'andhra-pradesh': [
+    'https://news.google.com/rss/search?q=Andhra+Pradesh+news',
+    'https://news.google.com/rss/search?q=Vijayawada+news',
+    'https://www.thehindu.com/news/national/andhra-pradesh/feeder/default.rss'
+  ],
+  telangana: [
+    'https://news.google.com/rss/search?q=Telangana+news',
+    'https://news.google.com/rss/search?q=Hyderabad+Telangana+news',
+    'https://www.thehindu.com/news/national/telangana/feeder/default.rss'
+  ],
+  hyderabad: [
+    'https://news.google.com/rss/search?q=Hyderabad+news',
+    'https://news.google.com/rss/search?q=Hyderabad+city+news',
+    'https://www.thehindu.com/news/cities/Hyderabad/feeder/default.rss'
+  ],
+  'daily-briefing': [
+    'https://news.google.com/rss/search?q=India+daily+briefing',
+    'https://news.google.com/rss/search?q=Hyderabad+daily+briefing',
+    'https://news.google.com/rss/search?q=Telangana+daily+briefing',
+    'https://news.google.com/rss/search?q=Andhra+Pradesh+daily+briefing'
+  ],
   favourites: []
 };
 
@@ -138,6 +165,9 @@ function inferCountry(text, source, url) {
     ['uk', /(uk|united kingdom|britain|england|scotland|wales|northern ireland|london|parliament|government|westminster|downing street|brexit)/],
     ['us', /(us|united states|usa|washington|california|texas|new york|washington dc|federal|congress|white house|senate)/],
     ['india', /(india|mumbai|delhi|modi|bengaluru|hyderabad|new delhi|gujarat|bangalore|india's)/],
+    ['andhra-pradesh', /(andhra pradesh|andhra|vijayawada|amaravati|visakhapatnam|guntur|nellore)/],
+    ['telangana', /(telangana|hyderabad|secunderabad|warangal|nizamabad|rangareddy|ghmc)/],
+    ['hyderabad', /(hyderabad|secunderabad|begumpet|charminar|ghmc|hyderabad city)/],
     ['australia', /(australia|sydney|melbourne|canberra|australian|queensland|nsw|victoria)/],
     ['uae', /(uae|dubai|abu dhabi|emirates|united arab emirates|sharjah|ajman|ras al khaimah)/]
   ];

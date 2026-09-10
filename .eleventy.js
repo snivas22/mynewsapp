@@ -10,6 +10,9 @@ module.exports = function(eleventyConfig) {
       { slug: 'uk', label: 'United Kingdom' },
       { slug: 'us', label: 'United States' },
       { slug: 'india', label: 'India' },
+      { slug: 'andhra-pradesh', label: 'Andhra Pradesh' },
+      { slug: 'telangana', label: 'Telangana' },
+      { slug: 'hyderabad', label: 'Hyderabad' },
       { slug: 'australia', label: 'Australia' },
       { slug: 'uae', label: 'UAE' }
     ]
@@ -34,7 +37,7 @@ module.exports = function(eleventyConfig) {
     });
   });
 
-  const categories = ['politics','world','business','technology','sports','entertainment','science','health','ai-trends','favourites'];
+  const categories = ['politics','world','business','technology','sports','entertainment','science','health','ai-trends','india','andhra-pradesh','telangana','hyderabad','daily-briefing','favourites'];
   const articlesRoot = path.join(__dirname, 'src', 'articles');
 
   function parseFrontmatter(fileContent) {
@@ -97,7 +100,7 @@ module.exports = function(eleventyConfig) {
     eleventyConfig.addCollection(cat, () => buildCategoryItems(cat));
   });
 
-  const countrySlugs = ['uk', 'us', 'india', 'australia', 'uae'];
+  const countrySlugs = ['uk', 'us', 'india', 'andhra-pradesh', 'telangana', 'hyderabad', 'australia', 'uae'];
   countrySlugs.forEach((country) => {
     eleventyConfig.addCollection(`country_${country}`, (collectionApi) =>
       collectionApi.getAll().filter((item) => {
@@ -113,6 +116,9 @@ module.exports = function(eleventyConfig) {
       uk: 'United Kingdom',
       us: 'United States',
       india: 'India',
+      'andhra-pradesh': 'Andhra Pradesh',
+      telangana: 'Telangana',
+      hyderabad: 'Hyderabad',
       australia: 'Australia',
       uae: 'UAE'
     }[slug],
