@@ -136,12 +136,13 @@ title: Home
   </article>
 </section>
 
-{% set categories = [ 'politics','world','business','technology','ai-trends','sports','entertainment','science','health','favourites' ] %}
+{% set categories = site.categories | map(attribute='slug') %}
 
 <section class="stats-row">
   {% for cat in categories %}
+    {% set config = site.categories | selectattr('slug', 'equalto', cat) | first %}
     <div class="stat-card">
-      <span>{{ cat | title }}</span>
+      <span>{{ config.label }}</span>
       <strong>{{ collections[cat] | length }}</strong>
     </div>
   {% endfor %}
@@ -149,10 +150,11 @@ title: Home
 
 <section class="category-grid">
   {% for cat in categories %}
+    {% set config = site.categories | selectattr('slug', 'equalto', cat) | first %}
     {% set items = collections[cat] %}
     <article class="category-card" style="--card-accent: var(--{{ cat }});" data-searchable="{{ cat }}{% for item in items %} {{ item.data.title }}{% endfor %}">
       <div class="category-head">
-        <span class="category-tag {{ cat }}">{{ cat | replace('-', ' ') | title }}</span>
+        <span class="category-tag {{ cat }}">{{ config.label }}</span>
         <a href="{{ ('/categories/' + cat + '/') | url }}">View all</a>
       </div>
 

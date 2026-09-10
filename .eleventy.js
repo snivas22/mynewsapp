@@ -13,6 +13,18 @@ module.exports = function(eleventyConfig) {
       day: 'numeric',
       year: 'numeric'
     }),
+    categories: [
+      { slug: 'politics', label: 'Politics', blurb: 'Government and policy updates' },
+      { slug: 'world', label: 'World', blurb: 'Global events and international stories' },
+      { slug: 'business', label: 'Business', blurb: 'Markets, brands, and industry moves' },
+      { slug: 'technology', label: 'Technology', blurb: 'AI, software, startups, and digital culture' },
+      { slug: 'ai-trends', label: 'AI & Trends', blurb: 'Signal, disruption, and the next big shifts' },
+      { slug: 'sports', label: 'Sports', blurb: 'Fixtures, results, and major contests' },
+      { slug: 'entertainment', label: 'Entertainment', blurb: 'Film, music, culture, and celebrity news' },
+      { slug: 'science', label: 'Science', blurb: 'Research and environmental updates' },
+      { slug: 'health', label: 'Health', blurb: 'Medical reporting and wellbeing stories' },
+      { slug: 'favourites', label: 'Favourites', blurb: 'Your saved spotlight stories and must-reads' }
+    ],
     countries: [
       { slug: 'uk', label: 'United Kingdom' },
       { slug: 'us', label: 'United States' },
