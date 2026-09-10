@@ -3,9 +3,21 @@ layout: base.njk
 title: Daily Briefing
 ---
 
-<section class="page-header">
-  <p class="eyebrow">Regional briefing</p>
-  <h2>Daily briefing</h2>
+<section class="regional-hero">
+  <div class="regional-copy">
+    <p class="eyebrow">Regional briefing</p>
+    <h2>Daily briefing</h2>
+    <p>India and key regional updates across politics, development, civic issues, and business, refreshed automatically.</p>
+  </div>
+
+  {% set topItem = collections['daily-briefing'][0] %}
+  {% if topItem %}
+    <article class="regional-feature">
+      <span class="mini-label">Top update</span>
+      <h3><a href="{{ topItem.url }}">{{ topItem.data.title }}</a></h3>
+      <p>{{ topItem.templateContent | striptags | truncate(180) }}</p>
+    </article>
+  {% endif %}
 </section>
 
 <div class="story-grid">

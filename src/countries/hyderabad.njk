@@ -3,9 +3,21 @@ layout: base.njk
 title: Hyderabad
 ---
 
-<section class="page-header">
-  <p class="eyebrow">Regional feed</p>
-  <h2>Hyderabad</h2>
+<section class="regional-hero">
+  <div class="regional-copy">
+    <p class="eyebrow">Regional briefing</p>
+    <h2>Hyderabad</h2>
+    <p>City-level updates on infrastructure, civic issues, business activity, and local news developments.</p>
+  </div>
+
+  {% set topItem = collections.country_hyderabad[0] %}
+  {% if topItem %}
+    <article class="regional-feature">
+      <span class="mini-label">Top update</span>
+      <h3><a href="{{ topItem.url }}">{{ topItem.data.title }}</a></h3>
+      <p>{{ topItem.templateContent | striptags | truncate(180) }}</p>
+    </article>
+  {% endif %}
 </section>
 
 <div class="story-grid">

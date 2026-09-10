@@ -923,6 +923,66 @@ a:focus-visible {
   margin-bottom: 20px;
 }
 
+.regional-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 22px;
+  padding: 22px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(16, 24, 40, 0.98), rgba(35, 59, 96, 0.96), rgba(22, 79, 102, 0.9));
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 26px 50px rgba(10, 17, 29, 0.18);
+}
+
+.regional-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.regional-copy h2 {
+  margin: 0;
+  color: #f9fbff;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.06em;
+  font-family: var(--headline);
+}
+
+.regional-copy p:last-child {
+  margin: 12px 0 0;
+  color: rgba(226, 236, 255, 0.8);
+  line-height: 1.8;
+  max-width: 60ch;
+}
+
+.regional-feature {
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.regional-feature h3 {
+  margin: 0 0 8px;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  font-family: var(--headline);
+  color: #f4f8ff;
+}
+
+.regional-feature p {
+  margin: 0;
+  color: rgba(226, 236, 255, 0.8);
+  line-height: 1.7;
+}
+
 .story-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
