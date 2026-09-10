@@ -4,6 +4,17 @@ const path = require('path');
 module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/assets');
 
+  eleventyConfig.addGlobalData('site', {
+    lastUpdated: new Date().toISOString(),
+    countries: [
+      { slug: 'uk', label: 'United Kingdom' },
+      { slug: 'us', label: 'United States' },
+      { slug: 'india', label: 'India' },
+      { slug: 'australia', label: 'Australia' },
+      { slug: 'uae', label: 'UAE' }
+    ]
+  });
+
   eleventyConfig.addFilter('readableDate', (dateObj) => {
     try {
       const d = new Date(dateObj);
@@ -12,6 +23,15 @@ module.exports = function(eleventyConfig) {
     } catch (e) {
       return dateObj || '';
     }
+  });
+
+  eleventyConfig.addFilter('filterByCountry', (items = [], country) => {
+    if (!country) return items;
+    const normalized = String(country).trim().toLowerCase();
+    return (items || []).filter((item) => {
+      const itemCountry = String(item?.data?.country || item?.country || '').trim().toLowerCase() || 'global';
+      return itemCountry === normalized;
+    });
   });
 
   const categories = ['politics','world','business','technology','sports','entertainment','science','health','ai-trends','favourites'];
@@ -76,6 +96,28 @@ module.exports = function(eleventyConfig) {
   categories.forEach(cat => {
     eleventyConfig.addCollection(cat, () => buildCategoryItems(cat));
   });
+
+  const countrySlugs = ['uk', 'us', 'india', 'australia', 'uae'];
+  countrySlugs.forEach((country) => {
+    eleventyConfig.addCollection(`country_${country}`, (collectionApi) =>
+      collectionApi.getAll().filter((item) => {
+        const itemCountry = String(item?.data?.country || item?.country || '').trim().toLowerCase() || 'global';
+        return itemCountry === country;
+      })
+    );
+  });
+
+  eleventyConfig.addCollection('countriesOverview', () => countrySlugs.map((slug) => ({
+    slug,
+    label: {
+      uk: 'United Kingdom',
+      us: 'United States',
+      india: 'India',
+      australia: 'Australia',
+      uae: 'UAE'
+    }[slug],
+    count: 0
+  })));
 
   return {
     dir: {

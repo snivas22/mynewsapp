@@ -1,0 +1,30 @@
+---
+layout: base.njk
+title: Australia
+---
+
+<section class="page-header">
+  <p class="eyebrow">Regional feed</p>
+  <h2>Australia</h2>
+</section>
+
+<div class="story-grid">
+  {% set items = collections.country_australia %}
+  {% if items | length == 0 %}
+    <div class="empty-panel">No Australia stories are available yet.</div>
+  {% endif %}
+  {% for item in items %}
+    <article class="story-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
+      <div class="story-meta">
+        <span class="story-source politics">{{ item.data.source }}</span>
+        <span>{{ item.date | readableDate }}</span>
+      </div>
+      <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
+      <p>{{ item.templateContent | striptags | truncate(180) }}</p>
+      <div class="story-actions">
+        <a class="read-more" href="{{ item.url }}">Read article →</a>
+        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" aria-label="Save {{ item.data.title }} to favourites">Save</button>
+      </div>
+    </article>
+  {% endfor %}
+</div>

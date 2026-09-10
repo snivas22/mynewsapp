@@ -49,6 +49,7 @@
           <nav class="main-nav" aria-label="Main navigation">
             <a href="{{ '/' | url }}">Home</a>
             <a href="{{ '/categories/' | url }}">Categories</a>
+            <a href="{{ '/countries/' | url }}">Countries</a>
             <a href="{{ '/categories/politics/' | url }}">Politics</a>
             <a href="{{ '/categories/world/' | url }}">World</a>
             <a href="{{ '/categories/business/' | url }}">Business</a>
@@ -84,7 +85,7 @@
       </main>
 
       <footer class="site-footer">
-        <p>Generated with Eleventy • Public RSS feeds refreshed automatically</p>
+        <p>Generated with Eleventy • Public RSS feeds refreshed automatically • Last refreshed {{ site.lastUpdated | readableDate }}</p>
       </footer>
     </div>
 
@@ -172,6 +173,51 @@
       let currentCountry = localStorage.getItem('news-country') || 'all';
       let currentQuery = '';
 
+      function normalizeCountry(value) {
+        const country = String(value || '').trim().toLowerCase();
+        if (!country || country === 'all') return 'all';
+
+        const aliases = {
+          uk: 'uk',
+          'united kingdom': 'uk',
+          britain: 'uk',
+          england: 'uk',
+          scotland: 'uk',
+          wales: 'uk',
+          'northern ireland': 'uk',
+          london: 'uk',
+          parliament: 'uk',
+          government: 'uk',
+          us: 'us',
+          usa: 'us',
+          'united states': 'us',
+          washington: 'us',
+          california: 'us',
+          texas: 'us',
+          'new york': 'us',
+          federal: 'us',
+          india: 'india',
+          mumbai: 'india',
+          delhi: 'india',
+          modi: 'india',
+          bengaluru: 'india',
+          hyderabad: 'india',
+          australia: 'australia',
+          sydney: 'australia',
+          melbourne: 'australia',
+          canberra: 'australia',
+          australian: 'australia',
+          uae: 'uae',
+          dubai: 'uae',
+          'abu dhabi': 'uae',
+          emirates: 'uae',
+          'united arab': 'uae',
+          global: 'global'
+        };
+
+        return aliases[country] || country;
+      }
+
       function inferCountryFromText(text) {
         const value = (text || '').toLowerCase();
         if (/(uk|united kingdom|britain|england|scotland|wales|london|parliament|government)/.test(value)) return 'uk';
@@ -182,12 +228,23 @@
         return 'global';
       }
 
+      function matchesSelectedCountry(itemCountry, selectedCountry) {
+        const item = normalizeCountry(itemCountry);
+        const selected = normalizeCountry(selectedCountry);
+
+        if (selected === 'all') return true;
+        if (selected === 'global') return item === 'global';
+        if (item === 'global') return false;
+
+        return item === selected;
+      }
+
       function applyUiFilters() {
         searchableItems.forEach((item) => {
-          const explicitCountry = (item.dataset.country || '').toLowerCase();
-          const inferredCountry = inferCountryFromText(item.dataset.searchable || item.textContent || '');
-          const country = explicitCountry || inferredCountry;
-          const matchesCountry = currentCountry === 'all' || currentCountry === 'global' || country === currentCountry || country === 'global';
+          const explicitCountry = normalizeCountry(item.dataset.country || '');
+          const inferredCountry = normalizeCountry(inferCountryFromText(item.dataset.searchable || item.textContent || ''));
+          const country = explicitCountry !== 'all' ? explicitCountry : inferredCountry;
+          const matchesCountry = matchesSelectedCountry(country, currentCountry);
           const text = (item.dataset.searchable || item.textContent || '').toLowerCase();
           const matchesQuery = !currentQuery || text.includes(currentQuery);
           item.style.display = matchesCountry && matchesQuery ? '' : 'none';

@@ -1,0 +1,22 @@
+---
+layout: base.njk
+title: Countries
+---
+
+<section class="page-header">
+  <p class="eyebrow">Regional coverage</p>
+  <h2>Country dashboards</h2>
+</section>
+
+<section class="category-grid category-grid-wide">
+  {% for country in site.countries %}
+    {% set items = collections['country_' + country.slug] %}
+    <article class="category-card">
+      <div class="category-head">
+        <span class="category-tag">{{ country.label }}</span>
+        <a href="{{ ('/countries/' + country.slug + '/') | url }}">View all</a>
+      </div>
+      <small>{{ items | length }} stories available</small>
+    </article>
+  {% endfor %}
+</section>

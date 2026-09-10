@@ -133,11 +133,19 @@ function matchesAITrend(text) {
 
 function inferCountry(text, source, url) {
   const haystack = `${text || ''} ${source || ''} ${url || ''}`.toLowerCase();
-  if (/(uk|united kingdom|britain|england|scotland|wales|northern ireland|london|parliament|government)/.test(haystack)) return 'uk';
-  if (/(us|united states|usa|washington|california|texas|new york|federal)/.test(haystack)) return 'us';
-  if (/(india|mumbai|delhi|modi|bengaluru|hyderabad|india's)/.test(haystack)) return 'india';
-  if (/(australia|sydney|melbourne|canberra|australian)/.test(haystack)) return 'australia';
-  if (/(uae|dubai|abu dhabi|emirates|united arab)/.test(haystack)) return 'uae';
+
+  const countryChecks = [
+    ['uk', /(uk|united kingdom|britain|england|scotland|wales|northern ireland|london|parliament|government|westminster|downing street|brexit)/],
+    ['us', /(us|united states|usa|washington|california|texas|new york|washington dc|federal|congress|white house|senate)/],
+    ['india', /(india|mumbai|delhi|modi|bengaluru|hyderabad|new delhi|gujarat|bangalore|india's)/],
+    ['australia', /(australia|sydney|melbourne|canberra|australian|queensland|nsw|victoria)/],
+    ['uae', /(uae|dubai|abu dhabi|emirates|united arab emirates|sharjah|ajman|ras al khaimah)/]
+  ];
+
+  for (const [country, regex] of countryChecks) {
+    if (regex.test(haystack)) return country;
+  }
+
   return 'global';
 }
 
