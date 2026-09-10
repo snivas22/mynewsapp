@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="te">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="Live news dashboard for politics, business, technology, sports, and more.">
+    <meta name="description" content="లైవ్ వార్తా డాష్‌బోర్డ్ - రాజకీయాలు, వ్యాపారం, సాంకేతికత, క్రీడలు మరియు మరిన్ని.">
     <title>{{ title or 'News Aggregator' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,10 +23,10 @@
 
         <div class="top-actions">
           <label class="country-picker-wrap" aria-label="Select country">
-            <span>Country</span>
+            <span data-i18n="countryLabel">దేశం</span>
             <select id="country-selector" class="country-picker">
-              <option value="all">All countries</option>
-              <option value="global">Global</option>
+              <option value="all" data-i18n="allCountries">అన్ని దేశాలు</option>
+              <option value="global" data-i18n="global">గ్లోబల్</option>
               <option value="uk">United Kingdom</option>
               <option value="us">United States</option>
               <option value="india">India</option>
@@ -38,9 +38,17 @@
             </select>
           </label>
 
+          <label class="country-picker-wrap" aria-label="Select language">
+            <span data-i18n="languageLabel">భాష</span>
+            <select id="language-selector" class="country-picker">
+              <option value="en">English</option>
+              <option value="te" selected>తెలుగు</option>
+            </select>
+          </label>
+
           <label class="search-box" aria-label="Search news">
             <span>⌕</span>
-            <input id="news-search" type="search" placeholder="Search stories" />
+            <input id="news-search" type="search" placeholder="వార్తలను వెతకండి" data-i18n-placeholder="searchPlaceholder" />
           </label>
 
           <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -50,17 +58,17 @@
           </button>
 
           <nav class="main-nav" aria-label="Main navigation">
-            <a href="{{ '/' | url }}">Home</a>
-            <a href="{{ '/categories/' | url }}">Categories</a>
-            <a href="{{ '/countries/' | url }}">Countries</a>
-            <a href="{{ '/categories/daily-briefing/' | url }}">Daily briefing</a>
-            <a href="{{ '/categories/politics/' | url }}">Politics</a>
-            <a href="{{ '/categories/world/' | url }}">World</a>
-            <a href="{{ '/categories/business/' | url }}">Business</a>
-            <a href="{{ '/categories/technology/' | url }}">Technology</a>
-            <a href="{{ '/categories/ai-trends/' | url }}">AI &amp; Trends</a>
-            <a href="{{ '/categories/sports/' | url }}">Sports</a>
-            <a href="{{ '/categories/favourites/' | url }}">Favourites</a>
+            <a href="{{ '/' | url }}" data-i18n="navHome">హోమ్</a>
+            <a href="{{ '/categories/' | url }}" data-i18n="navCategories">వర్గాలు</a>
+            <a href="{{ '/countries/' | url }}" data-i18n="navCountries">దేశాలు</a>
+            <a href="{{ '/categories/daily-briefing/' | url }}" data-i18n="navDailyBriefing">రోజువారీ నివేదిక</a>
+            <a href="{{ '/categories/politics/' | url }}" data-i18n="navPolitics">రాజకీయాలు</a>
+            <a href="{{ '/categories/world/' | url }}" data-i18n="navWorld">ప్రపంచం</a>
+            <a href="{{ '/categories/business/' | url }}" data-i18n="navBusiness">వ్యాపారం</a>
+            <a href="{{ '/categories/technology/' | url }}" data-i18n="navTechnology">సాంకేతికత</a>
+            <a href="{{ '/categories/ai-trends/' | url }}" data-i18n="navAi">AI &amp; ట్రెండ్స్</a>
+            <a href="{{ '/categories/sports/' | url }}" data-i18n="navSports">క్రీడలు</a>
+            <a href="{{ '/categories/favourites/' | url }}" data-i18n="navFavourites">ఇష్టమైనవి</a>
           </nav>
         </div>
       </header>
@@ -89,12 +97,142 @@
       </main>
 
       <footer class="site-footer">
-        <p>Generated with Eleventy • Public RSS feeds refreshed automatically • Last refreshed <span data-last-updated="{{ site.lastUpdated }}">just now</span></p>
+        <p data-i18n="footerText">Eleventy తో రూపొందించబడింది • öffైన RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది <span data-last-updated="{{ site.lastUpdated }}">ఇప్పుడే</span></p>
       </footer>
     </div>
 
     <script>
       const STORAGE_KEY = 'newspulse-favourites';
+      const translations = {
+        en: {
+          countryLabel: 'Country',
+          languageLabel: 'Language',
+          allCountries: 'All countries',
+          global: 'Global',
+          searchPlaceholder: 'Search stories',
+          navHome: 'Home',
+          navCategories: 'Categories',
+          navCountries: 'Countries',
+          navDailyBriefing: 'Daily briefing',
+          navPolitics: 'Politics',
+          navWorld: 'World',
+          navBusiness: 'Business',
+          navTechnology: 'Technology',
+          navAi: 'AI & Trends',
+          navSports: 'Sports',
+          navFavourites: 'Favourites',
+          liveUpdates: 'Live updates',
+          newsPulse: 'NewsPulse',
+          browseTopics: 'Browse topics',
+          allCategories: 'All categories',
+          countryDashboards: 'Country dashboards',
+          regionalCoverage: 'Regional coverage',
+          countries: 'Countries',
+          regionalBriefing: 'Regional briefing',
+          dailyBriefing: 'Daily briefing',
+          globalEdition: 'Global edition',
+          regionalDesk: 'Regional desk',
+          indiaStateUpdates: 'India and state updates',
+          topStory: 'Top story',
+          exploreCategories: 'Explore categories',
+          topStoryBtn: 'Top story',
+          freshStoriesTitle: 'Fresh stories from across the world.',
+          freshStoriesText: 'Track the latest reporting in politics, business, technology, sports, health, and more with a clean, readable dashboard.',
+          spotlight: 'Spotlight',
+          markets: 'Markets',
+          culture: 'Culture',
+          breaking: 'Breaking',
+          breakingText: 'Inflation and policy shifts continue to drive volatility across markets and federal debate.',
+          liveDesk: 'LIVE DESK',
+          feedActive: 'RSS stream active',
+          feedSchedule: 'Updated automatically on schedule',
+          liveReport: 'LIVE REPORT',
+          globalBriefing: 'Global Briefing',
+          liveDescription: 'The briefing you need before the next headline lands.',
+          footerText: 'Generated with Eleventy • Public RSS feeds refreshed automatically • Last refreshed just now'
+        },
+        te: {
+          countryLabel: 'దేశం',
+          languageLabel: 'భాష',
+          allCountries: 'అన్ని దేశాలు',
+          global: 'గ్లోబల్',
+          searchPlaceholder: 'వార్తలను వెతకండి',
+          navHome: 'హోమ్',
+          navCategories: 'వర్గాలు',
+          navCountries: 'దేశాలు',
+          navDailyBriefing: 'రోజువారీ నివేదిక',
+          navPolitics: 'రాజకీయాలు',
+          navWorld: 'ప్రపంచం',
+          navBusiness: 'వ్యాపారం',
+          navTechnology: 'సాంకేతికత',
+          navAi: 'AI & ట్రెండ్స్',
+          navSports: 'క్రీడలు',
+          navFavourites: 'ఇష్టమైనవి',
+          liveUpdates: 'లైవ్ అప్‌డేట్లు',
+          newsPulse: 'న్యూస్‌పల్స్',
+          browseTopics: 'విషయాలను బ్రౌస్ చేయండి',
+          allCategories: 'అన్ని వర్గాలు',
+          countryDashboards: 'దేశ డాష్‌బోర్డ్లు',
+          regionalCoverage: 'ప్రాంతీయ కవర్',
+          countries: 'దేశాలు',
+          regionalBriefing: 'ప్రాంతీయ నివేదిక',
+          dailyBriefing: 'రోజువారీ నివేదిక',
+          globalEdition: 'గ్లోబల్ ఎడిషన్',
+          regionalDesk: 'ప్రాంతీయ డెస్క్',
+          indiaStateUpdates: 'ఇండియా మరియు రాష్ట్ర అప్‌డేట్లు',
+          topStory: 'టాప్ స్టోరీ',
+          exploreCategories: 'వర్గాలను చూడండి',
+          topStoryBtn: 'టాప్ స్టోరీ',
+          freshStoriesTitle: 'ప్రపంచవ్యాప్తంగా తాజా కథనాలు.',
+          freshStoriesText: 'రాజకీయాలు, వ్యాపారం, సాంకేతికత, క్రీడలు, ఆరోగ్యం మరియు మరిన్ని తాజా నివేదికలను క్లియర్, చదవడానికి సులభమైన డాష్‌బోర్డ్‌లో అనుసరించండి.',
+          spotlight: 'స్పాట్లైట్',
+          markets: 'మార్కెట్స్',
+          culture: 'సంస్కృతి',
+          breaking: 'బ్రేకింగ్',
+          breakingText: 'ద్రవ్యోల్బణం మరియు విధాన మార్పులు మార్కెట్లు మరియు ఫెడరల్ చర్చలపై కొనసాగుతున్న అస్తవ్యస్తిని పెంచుతున్నాయి.',
+          liveDesk: 'లైవ్ డెస్క్',
+          feedActive: 'RSS స్ట్రీమ్ క్రియాశీలంగా ఉంది',
+          feedSchedule: 'షెడ్యూల్ ప్రకారం ఆటోమేటిక్గా అప్‌డేట్ అవుతోంది',
+          liveReport: 'లైవ్ రిపోర్ట్',
+          globalBriefing: 'గ్లోబల్ బ్రీఫింగ్',
+          liveDescription: 'తదుపరి ముఖ్యమైన వివరాల కంటే ముందే అవసరమైన నివేదిక.',
+          footerText: 'Eleventy తో రూపొందించబడింది • పబ్లిక్ RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది ఇప్పుడు'
+        }
+      };
+
+      function applyLanguage(lang) {
+        const selected = translations[lang] || translations.te;
+        document.documentElement.lang = lang === 'en' ? 'en' : 'te';
+
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+          if (selected[el.dataset.i18n]) {
+            el.textContent = selected[el.dataset.i18n];
+          }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+          if (selected[el.dataset.i18nPlaceholder]) {
+            el.placeholder = selected[el.dataset.i18nPlaceholder];
+          }
+        });
+
+        const brand = document.querySelector('.brand-kicker');
+        if (brand) brand.textContent = selected.liveUpdates;
+
+        const brandTitle = document.querySelector('.brand-wrap h1 a');
+        if (brandTitle) brandTitle.textContent = selected.newsPulse;
+
+        localStorage.setItem('site-language', lang);
+      }
+
+      const languageSelector = document.getElementById('language-selector');
+      if (languageSelector) {
+        const savedLanguage = localStorage.getItem('site-language') || 'te';
+        languageSelector.value = savedLanguage;
+        languageSelector.addEventListener('change', (event) => applyLanguage(event.target.value || 'te'));
+        applyLanguage(savedLanguage);
+      }
+
       const countryLabels = {
         global: 'Global',
         uk: 'United Kingdom',
