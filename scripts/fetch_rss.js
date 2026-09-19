@@ -2,6 +2,8 @@ const Parser = require('rss-parser');
 const fs = require('fs');
 const path = require('path');
 
+const { parseFrontmatter, serializeFrontmatter } = require('./lib/frontmatter');
+
 const parser = new Parser();
 
 const feedsByCategory = {
@@ -132,10 +134,6 @@ function normalizeRegionToken(value) {
 
 function cleanText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
-}
-
-function escapeFrontmatter(value) {
-  return String(value || '').replace(/"/g, '\\"').replace(/\r?\n/g, ' ');
 }
 
 async function fetchWithRetry(url, attempts = 3, timeoutMs = 20000) {
@@ -276,19 +274,8 @@ function readExistingCategoryArticles(categoryDir) {
     .map((file) => {
       const fullPath = path.join(categoryDir, file);
       const content = fs.readFileSync(fullPath, 'utf8');
-      const match = content.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);
-      if (!match) return null;
-
-      const data = {};
-      for (const line of match[1].split(/\r?\n/)) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith('#')) continue;
-        const idx = trimmed.indexOf(':');
-        if (idx === -1) continue;
-        const key = trimmed.slice(0, idx).trim();
-        const value = trimmed.slice(idx + 1).trim();
-        data[key] = value.replace(/^"|"$/g, '').replace(/^'|'$/g, '');
-      }
+      const { data } = parseFrontmatter(content);
+      if (!data || Object.keys(data).length === 0) return null;
 
       const title = cleanText(data.title || file.replace(/\.md$/, '').replace(/-/g, ' '));
       const link = cleanText(data.original_link || '#');
@@ -359,8 +346,15 @@ async function fetchAndWrite() {
     for (const article of mergedArticles) {
       const slug = slugify(`${article.title}-${article.link}`);
       const filename = path.join(categoryDir, `${slug}.md`);
-      const body = article.summary || 'No summary available.';
-      const md = `---\ntitle: "${escapeFrontmatter(article.title)}"\ndate: "${article.date}"\ncategory: "${article.category}"\nsource: "${escapeFrontmatter(article.source)}"\noriginal_link: "${escapeFrontmatter(article.link)}"\ncountry: "${escapeFrontmatter(normalizeRegionToken(article.country || 'global'))}"\n---\n\n${body}\n\n[Read original article](${article.link})\n`;
+      const body = `${article.summary || 'No summary available.'}\n\n[Read original article](${article.link})`;
+      const md = serializeFrontmatter({
+        title: article.title,
+        date: article.date,
+        category: article.category,
+        source: article.source,
+        original_link: article.link,
+        country: normalizeRegionToken(article.country || 'global')
+      }, body);
 
       fs.writeFileSync(filename, md, 'utf8');
       count++;

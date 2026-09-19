@@ -6,7 +6,8 @@
   "scripts": {
     "fetch": "node scripts/fetch_rss.js",
     "build": "eleventy && node -e \"require('fs').writeFileSync('_site/.nojekyll', '')\"",
-    "dev": "eleventy --serve"
+    "dev": "eleventy --serve",
+    "test": "node --test"
   },
   "dependencies": {
     "rss-parser": "^3.12.0",

@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const { parseFrontmatter } = require('./scripts/lib/frontmatter');
+
 module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/assets');
 
@@ -76,27 +78,6 @@ module.exports = function(eleventyConfig) {
   const categories = ['politics','world','business','technology','sports','entertainment','science','health','ai-trends','india','andhra-pradesh','telangana','hyderabad','daily-briefing','favourites'];
   const articlesRoot = path.join(__dirname, 'src', 'articles');
 
-  function parseFrontmatter(fileContent) {
-    const match = fileContent.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);
-    if (!match) return { data: {}, body: fileContent };
-
-    const front = match[1];
-    const body = match[2] || '';
-    const data = {};
-
-    front.split(/\r?\n/).forEach((line) => {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('#')) return;
-      const idx = trimmed.indexOf(':');
-      if (idx === -1) return;
-      const key = trimmed.slice(0, idx).trim();
-      const value = trimmed.slice(idx + 1).trim();
-      data[key] = value.replace(/^"|"$/g, '').replace(/^'|'$/g, '');
-    });
-
-    return { data, body };
-  }
-
   function buildCategoryItems(cat) {
     const categoryDir = path.join(articlesRoot, cat);
     if (!fs.existsSync(categoryDir)) return [];
@@ -108,7 +89,7 @@ module.exports = function(eleventyConfig) {
         const content = fs.readFileSync(fullPath, 'utf8');
         const { data, body } = parseFrontmatter(content);
         const title = data.title || file.replace(/\.md$/, '').replace(/-/g, ' ');
-        const date = data.date || new Date().toISOString();
+        const date = data.date || fs.statSync(fullPath).mtime.toISOString();
         const source = data.source || 'Open source feed';
         const originalLink = data.original_link || '#';
         const country = data.country || 'global';

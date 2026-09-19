@@ -35,7 +35,7 @@ title: Home
 
 <section class="hero-panel">
   <div class="lead-story">
-    <p class="eyebrow">Top story</p>
+    <p class="eyebrow" data-i18n="topStory">టాప్ స్టోరీ</p>
     {% set featured = collections.politics[0] %}
     {% if featured %}
       <h2><a href="{{ featured.url }}">{{ featured.data.title }}</a></h2>
@@ -45,12 +45,12 @@ title: Home
         <span>{{ featured.data.source }}</span>
       </div>
     {% else %}
-      <h2>Fresh stories from across the world.</h2>
-      <p class="hero-copy">Track the latest reporting in politics, business, technology, sports, health, and more with a clean, readable dashboard.</p>
+      <h2 data-i18n="freshStoriesTitle">ప్రపంచవ్యాప్తంగా తాజా కథనాలు.</h2>
+      <p class="hero-copy" data-i18n="freshStoriesText">రాజకీయాలు, వ్యాపారం, సాంకేతికత, క్రీడలు, ఆరోగ్యం మరియు మరిన్ని తాజా నివేదికలను క్లియర్, చదవడానికి సులభమైన డాష్‌బోర్డ్‌లో అనుసరించండి.</p>
     {% endif %}
     <div class="hero-actions">
-      <a class="primary-btn" href="{{ '/categories/' | url }}">Explore categories</a>
-      <a class="secondary-btn" href="{{ '/categories/politics/' | url }}">Top story</a>
+      <a class="primary-btn" href="{{ '/categories/' | url }}" data-i18n="exploreCategories">వర్గాలను చూడండి</a>
+      <a class="secondary-btn" href="{{ '/categories/politics/' | url }}" data-i18n="topStoryBtn">టాప్ స్టోరీ</a>
     </div>
   </div>
 
@@ -89,7 +89,7 @@ title: Home
     <div class="feature-content">
       <span class="feature-kicker" data-i18n="spotlight">స్పాట్లైట్</span>
       <h3 data-i18n="featureEnergyTitle">ప్రపంచ ఎనర్జీ మరియు విధాన మార్పులు తదుపరి ఆర్థిక చక్రాన్ని మళ్లీ రూపొందిస్తున్నాయి.</h3>
-      <p data-i18n="featureEnergyText">వారంలో అత్యంత ముఖ్యమైన కథనాలపై విశ్లేషణ, మార్కెట్ చ movements మరియు అంతర్జాతీయ స్పందన.</p>
+      <p data-i18n="featureEnergyText">వారంలోని అత్యంత ముఖ్యమైన కథనాలపై విశ్లేషణ, మార్కెట్ కదలికలు మరియు అంతర్జాతీయ స్పందన.</p>
     </div>
   </article>
 

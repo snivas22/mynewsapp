@@ -51,13 +51,13 @@
             <input id="news-search" type="search" placeholder="వార్తలను వెతకండి" data-i18n-placeholder="searchPlaceholder" />
           </label>
 
-          <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <button class="nav-toggle" aria-label="Toggle navigation" aria-controls="main-nav" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
           </button>
 
-          <nav class="main-nav" aria-label="Main navigation">
+          <nav id="main-nav" class="main-nav" aria-label="Main navigation">
             <a href="{{ '/' | url }}" data-i18n="navHome">హోమ్</a>
             <a href="{{ '/categories/' | url }}" data-i18n="navCategories">వర్గాలు</a>
             <a href="{{ '/countries/' | url }}" data-i18n="navCountries">దేశాలు</a>
@@ -97,7 +97,7 @@
       </main>
 
       <footer class="site-footer">
-        <p data-i18n="footerText">Eleventy తో రూపొందించబడింది • öffైన RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది <span data-last-updated="{{ site.lastUpdated }}">ఇప్పుడే</span></p>
+        <p data-i18n="footerText">Eleventy తో రూపొందించబడింది • పబ్లిక్ RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది <span data-last-updated="{{ site.lastUpdated }}">ఇప్పుడే</span></p>
       </footer>
     </div>
 
@@ -143,6 +143,15 @@
           culture: 'Culture',
           breaking: 'Breaking',
           breakingText: 'Inflation and policy shifts continue to drive volatility across markets and federal debate.',
+          featureEnergyTitle: 'Global energy and policy shifts are reshaping the next economic cycle.',
+          featureEnergyText: 'Analysis, market movements, and international reaction to the week\u2019s biggest stories.',
+          featureMarketsTitle: 'Investor attention is fixed on AI, credit, and supply-chain resilience.',
+          featureCultureTitle: 'Streaming, sport, and pop culture are drawing record audiences.',
+          indiaText: 'Live coverage of national politics, business, technology, and governance, refreshed automatically.',
+          saveLabel: 'Save',
+          savedLabel: 'Saved',
+          justNow: 'just now',
+          minutesAgo: 'minutes ago',
           liveDesk: 'LIVE DESK',
           feedActive: 'RSS stream active',
           feedSchedule: 'Updated automatically on schedule',
@@ -211,6 +220,15 @@
           culture: 'సంస్కృతి',
           breaking: 'బ్రేకింగ్',
           breakingText: 'ద్రవ్యోల్బణం మరియు విధాన మార్పులు మార్కెట్లు మరియు ఫెడరల్ చర్చలపై కొనసాగుతున్న అస్తవ్యస్తిని పెంచుతున్నాయి.',
+          featureEnergyTitle: 'ప్రపంచ ఎనర్జీ మరియు విధాన మార్పులు తదుపరి ఆర్థిక చక్రాన్ని మళ్లీ రూపొందిస్తున్నాయి.',
+          featureEnergyText: 'వారంలోని అత్యంత ముఖ్యమైన కథనాలపై విశ్లేషణ, మార్కెట్ కదలికలు మరియు అంతర్జాతీయ స్పందన.',
+          featureMarketsTitle: 'AI, రుణం మరియు సరఫరా గొలుసు స్థితిస్థాపనపై పెట్టుబడిదారుల దృష్టి ఉంది.',
+          featureCultureTitle: 'స్ట్రీమింగ్, క్రీడలు మరియు పాప్ సంస్కృతి రికార్డు ప్రేక్షకులను ఆకర్షిస్తున్నాయి.',
+          indiaText: 'జాతీయ రాజకీయాలు, వ్యాపారం, సాంకేతికత మరియు పాలనపై లైవ్ కవరేజ్ ఆటోమేటిక్గా తాజాకరించబడుతుంది.',
+          saveLabel: 'సేవ్ చేయండి',
+          savedLabel: 'సేవ్ చేయబడింది',
+          justNow: 'ఇప్పుడే',
+          minutesAgo: 'నిమిషాల క్రితం',
           liveDesk: 'లైవ్ డెస్క్',
           feedActive: 'RSS స్ట్రీమ్ క్రియాశీలంగా ఉంది',
           feedSchedule: 'షెడ్యూల్ ప్రకారం ఆటోమేటిక్గా అప్‌డేట్ అవుతోంది',
@@ -242,9 +260,51 @@
         }
       };
 
+      const localizedRegionLabels = {
+        en: {
+          global: 'Global',
+          uk: 'United Kingdom',
+          us: 'United States',
+          india: 'India',
+          'andhra-pradesh': 'Andhra Pradesh',
+          telangana: 'Telangana',
+          hyderabad: 'Hyderabad',
+          australia: 'Australia',
+          uae: 'UAE'
+        },
+        te: {
+          global: 'గ్లోబల్',
+          uk: 'యునైటెడ్ కింగ్‌డమ్',
+          us: 'యునైటెడ్ స్టేట్స్',
+          india: 'భారతదేశం',
+          'andhra-pradesh': 'ఆంధ్రప్రదేశ్',
+          telangana: 'తెలంగాణ',
+          hyderabad: 'హైదరాబాద్',
+          australia: 'ఆస్ట్రేలియా',
+          uae: 'యూఏఈ'
+        }
+      };
+
+      let currentLanguage = localStorage.getItem('site-language') || 'te';
+
+      function currentTranslations() {
+        return translations[currentLanguage] || translations.te;
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
       function applyLanguage(lang) {
-        const selected = translations[lang] || translations.te;
-        document.documentElement.lang = lang === 'en' ? 'en' : 'te';
+        const normalized = translations[lang] ? lang : 'te';
+        const selected = translations[normalized];
+        currentLanguage = normalized;
+        document.documentElement.lang = normalized;
 
         document.querySelectorAll('[data-i18n]').forEach((el) => {
           if (selected[el.dataset.i18n]) {
@@ -264,7 +324,13 @@
         const brandTitle = document.querySelector('.brand-wrap h1 a');
         if (brandTitle) brandTitle.textContent = selected.newsPulse;
 
-        localStorage.setItem('site-language', lang);
+        localStorage.setItem('site-language', normalized);
+
+        // Re-render text that is injected by scripts rather than templates.
+        updateFavouriteButtons();
+        renderFavouritePage();
+        addRegionBadges();
+        updateLastUpdatedLabel();
       }
 
       const languageSelector = document.getElementById('language-selector');
@@ -272,7 +338,6 @@
         const savedLanguage = localStorage.getItem('site-language') || 'te';
         languageSelector.value = savedLanguage;
         languageSelector.addEventListener('change', (event) => applyLanguage(event.target.value || 'te'));
-        applyLanguage(savedLanguage);
       }
 
       const countryLabels = {
@@ -289,23 +354,30 @@
 
       function formatCountryLabel(value) {
         const country = String(value || 'global').trim().toLowerCase();
+        const localized = localizedRegionLabels[currentLanguage] || {};
+        if (localized[country]) return localized[country];
         if (countryLabels[country]) return countryLabels[country];
         return country.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
       }
 
       function addRegionBadges() {
-        document.querySelectorAll('.story-card').forEach((card) => {
+        document.querySelectorAll('[data-country]').forEach((card) => {
           const country = (card.dataset.country || 'global').toLowerCase();
-          if (card.querySelector('.story-region-badge')) return;
+          const label = formatCountryLabel(country);
+
+          const existing = card.querySelector('.story-region-badge');
+          if (existing) {
+            existing.textContent = label;
+            return;
+          }
+
+          const meta = card.querySelector('.story-meta');
+          if (!meta) return;
 
           const badge = document.createElement('span');
           badge.className = 'story-region-badge';
-          badge.textContent = formatCountryLabel(country);
-
-          const meta = card.querySelector('.story-meta');
-          if (meta) {
-            meta.appendChild(badge);
-          }
+          badge.textContent = label;
+          meta.appendChild(badge);
         });
       }
 
@@ -316,9 +388,10 @@
         const iso = el.dataset.lastUpdated;
         if (!iso) return;
 
+        const t = currentTranslations();
         const updatedAt = new Date(iso);
         const diffMinutes = Math.max(0, Math.round((Date.now() - updatedAt.getTime()) / 60000));
-        el.textContent = diffMinutes <= 1 ? 'just now' : `${diffMinutes} minutes ago`;
+        el.textContent = diffMinutes <= 1 ? t.justNow : `${diffMinutes} ${t.minutesAgo}`;
       }
 
       function getFavourites() {
@@ -345,13 +418,18 @@
       function updateFavouriteButtons() {
         const items = getFavourites();
         const savedUrls = new Set(items.map((item) => item.url));
+        const t = currentTranslations();
 
         document.querySelectorAll('.favorite-toggle').forEach((button) => {
           const url = button.dataset.url;
           const saved = savedUrls.has(url);
-          button.textContent = saved ? 'Saved' : 'Save';
+          const label = saved ? t.savedLabel : t.saveLabel;
+          const title = button.dataset.title;
+
+          button.textContent = label;
           button.classList.toggle('is-saved', saved);
           button.setAttribute('aria-pressed', saved ? 'true' : 'false');
+          button.setAttribute('aria-label', title ? `${label}: ${title}` : label);
         });
       }
 
@@ -374,8 +452,8 @@
         empty.hidden = true;
         list.innerHTML = favourites.map((story) => `
           <li>
-            <a href="${story.url}" target="_blank" rel="noreferrer"><strong>${story.title}</strong></a>
-            <div class="meta">${story.date || ''} • ${story.source || 'Saved article'}</div>
+            <a href="${escapeHtml(story.url)}" target="_blank" rel="noreferrer noopener"><strong>${escapeHtml(story.title)}</strong></a>
+            <div class="meta">${escapeHtml(story.date || '')} • ${escapeHtml(story.source || 'Saved article')}</div>
           </li>
         `).join('');
       }
@@ -430,7 +508,14 @@
           delhi: 'india',
           modi: 'india',
           bengaluru: 'india',
-          hyderabad: 'india',
+          'andhra pradesh': 'andhra-pradesh',
+          andhra: 'andhra-pradesh',
+          vijayawada: 'andhra-pradesh',
+          amaravati: 'andhra-pradesh',
+          telangana: 'telangana',
+          warangal: 'telangana',
+          hyderabad: 'hyderabad',
+          secunderabad: 'hyderabad',
           australia: 'australia',
           sydney: 'australia',
           melbourne: 'australia',
@@ -451,7 +536,10 @@
         const value = (text || '').toLowerCase();
         if (/(uk|united kingdom|britain|england|scotland|wales|london|parliament|government)/.test(value)) return 'uk';
         if (/(us|united states|usa|washington|california|texas|new york|federal)/.test(value)) return 'us';
-        if (/(india|mumbai|delhi|modi|bengaluru|hyderabad)/.test(value)) return 'india';
+        if (/(hyderabad|secunderabad|charminar|ghmc)/.test(value)) return 'hyderabad';
+        if (/(telangana|warangal|nizamabad)/.test(value)) return 'telangana';
+        if (/(andhra pradesh|andhra|vijayawada|visakhapatnam|amaravati|guntur)/.test(value)) return 'andhra-pradesh';
+        if (/(india|mumbai|delhi|modi|bengaluru)/.test(value)) return 'india';
         if (/(australia|sydney|melbourne|canberra|australian)/.test(value)) return 'australia';
         if (/(uae|dubai|abu dhabi|emirates|united arab)/.test(value)) return 'uae';
         return 'global';
@@ -515,10 +603,8 @@
         });
       }
 
-      updateFavouriteButtons();
-      renderFavouritePage();
-      addRegionBadges();
-      updateLastUpdatedLabel();
+      // Apply the stored language last so every renderer and DOM node exists.
+      applyLanguage(localStorage.getItem('site-language') || 'te');
     </script>
   </body>
 </html>
