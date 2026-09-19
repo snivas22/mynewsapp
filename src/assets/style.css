@@ -1284,6 +1284,7 @@ a:focus-visible {
   align-items: baseline;
   gap: 0.5rem 1rem;
   margin: 1.75rem 0 1rem;
+  scroll-margin-top: 96px;
 }
 
 .subcategory-head h3 {
@@ -1304,5 +1305,44 @@ a:focus-visible {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.subcategory-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.subcategory-jump a {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--accent-2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.subcategory-jump a:hover,
+.subcategory-jump a:focus-visible {
+  background: var(--panel-strong);
+  border-color: var(--accent-2);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-head h3 {
+  margin: 0;
+  font-size: 1.25rem;
 }
 

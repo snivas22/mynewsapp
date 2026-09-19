@@ -35,11 +35,32 @@ const CATEGORIES = [
 ];
 
 /**
- * Sub-categories of the daily briefing. They get their own collections so the
- * daily briefing page can render them, but they stay out of the country pool so
- * job-market news never shows up on a regional dashboard.
+ * Sub-categories of the daily briefing. Each one gets its own collection and
+ * its own section on the daily briefing page, but stays out of the country
+ * pool so job-market news never lands on a regional dashboard.
+ *
+ * `defaultLabel` / `defaultBlurb` are the Telugu markup defaults. The English
+ * and Telugu translations live in the layout's `translations` object under
+ * `labelKey` / `blurbKey`.
  */
-const SUB_CATEGORIES = ['java-developer-jobs', 'java-full-stack-jobs'];
+const DAILY_BRIEFING_SUB_CATEGORIES = [
+  {
+    slug: 'java-developer-jobs',
+    labelKey: 'subJavaDeveloperJobs',
+    blurbKey: 'subJavaDeveloperJobsBlurb',
+    defaultLabel: 'జావా డెవలపర్ ఉద్యోగాలు',
+    defaultBlurb: 'జావా డెవలపర్ పాత్రల కోసం లైవ్ నియామక వార్తలు.'
+  },
+  {
+    slug: 'java-full-stack-jobs',
+    labelKey: 'subJavaFullStackJobs',
+    blurbKey: 'subJavaFullStackJobsBlurb',
+    defaultLabel: 'జావా ఫుల్ స్టాక్ డెవలపర్ ఉద్యోగాలు',
+    defaultBlurb: 'జావా ఫుల్ స్టాక్ డెవలపర్ పాత్రల కోసం లైవ్ నియామక వార్తలు.'
+  }
+];
+
+const SUB_CATEGORIES = DAILY_BRIEFING_SUB_CATEGORIES.map((sub) => sub.slug);
 
 /** Every category that has an article directory, in sidebar/reading order. */
 const ALL_CATEGORIES = [...CATEGORIES, ...SUB_CATEGORIES];
@@ -48,6 +69,10 @@ const COUNTRY_SLUGS = ['uk', 'us', 'india', 'andhra-pradesh', 'telangana', 'hyde
 
 /** How many stories a single category page lists. */
 const CATEGORY_LIMIT = 8;
+/** The daily briefing is an aggregate page, so it lists more than a topic page. */
+const DAILY_BRIEFING_LIMIT = 24;
+/** Per-category overrides for CATEGORY_LIMIT. */
+const CATEGORY_LIMITS = { 'daily-briefing': DAILY_BRIEFING_LIMIT };
 /** How many stories each daily-briefing sub-category section lists. */
 const SUB_CATEGORY_LIMIT = 6;
 /** How many stories a single country/region dashboard lists. */
@@ -72,6 +97,11 @@ const COUNTRY_LABELS = {
 function normalizeCountry(value) {
   const normalized = String(value == null ? '' : value).trim().toLowerCase();
   return normalized || DEFAULT_COUNTRY;
+}
+
+/** Listing limit for a category, honouring per-category overrides. */
+function categoryLimit(slug) {
+  return CATEGORY_LIMITS[slug] || CATEGORY_LIMIT;
 }
 
 function countryLabel(value) {
@@ -181,13 +211,17 @@ module.exports = {
   CATEGORIES,
   SUB_CATEGORIES,
   ALL_CATEGORIES,
+  DAILY_BRIEFING_SUB_CATEGORIES,
   COUNTRY_SLUGS,
   COUNTRY_LABELS,
   CATEGORY_LIMIT,
+  DAILY_BRIEFING_LIMIT,
+  CATEGORY_LIMITS,
   SUB_CATEGORY_LIMIT,
   COUNTRY_LIMIT,
   DEFAULT_COUNTRY,
   normalizeCountry,
+  categoryLimit,
   countryLabel,
   readCategory,
   readPool,

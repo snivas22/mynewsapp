@@ -8,6 +8,8 @@ const { parseFrontmatter, escapeFrontmatterValue, serializeFrontmatter } = requi
 const srcDir = path.join(__dirname, '..', 'src');
 const baseLayoutPath = path.join(srcDir, 'layouts', 'base.njk');
 
+const { DAILY_BRIEFING_SUB_CATEGORIES } = require('./lib/articles');
+
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(dir, entry.name);
@@ -70,13 +72,17 @@ test('English and Telugu translation blocks stay in sync', () => {
 
 test('daily briefing sub-category label and blurb keys exist in both languages', () => {
   const { en, te } = readTranslations();
-  const template = fs.readFileSync(path.join(srcDir, 'categories', 'daily-briefing.njk'), 'utf8');
 
-  const keys = [...template.matchAll(/(?:labelKey|blurbKey):\s*'([A-Za-z0-9_]+)'/g)].map((match) => match[1]);
-  assert.equal(keys.length > 0, true, 'expected labelKey/blurbKey entries in the daily briefing template');
+  const keys = DAILY_BRIEFING_SUB_CATEGORIES.flatMap((sub) => [sub.labelKey, sub.blurbKey]);
+  assert.equal(keys.length > 0, true, 'expected sub-categories to declare label and blurb keys');
 
   const missing = keys.filter((key) => !en.has(key) || !te.has(key));
   assert.deepEqual(missing, [], `Missing sub-category translations: ${missing.join(', ')}`);
+
+  for (const sub of DAILY_BRIEFING_SUB_CATEGORIES) {
+    assert.equal(sub.defaultLabel.length > 0, true, `${sub.slug} needs a markup default label`);
+    assert.equal(sub.defaultBlurb.length > 0, true, `${sub.slug} needs a markup default blurb`);
+  }
 });
 
 test('frontmatter round-trips values containing quotes and newlines', () => {

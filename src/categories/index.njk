@@ -10,25 +10,44 @@ title: Categories
 
 <section class="category-grid category-grid-wide">
   {% set categoryList = [
-    { slug: 'politics', label: 'Politics', blurb: 'Government and policy updates' },
-    { slug: 'world', label: 'World', blurb: 'Global events and international stories' },
-    { slug: 'business', label: 'Business', blurb: 'Markets, brands, and industry moves' },
-    { slug: 'technology', label: 'Technology', blurb: 'AI, software, startups, and digital culture' },
-    { slug: 'ai-trends', label: 'AI & Trends', blurb: 'Signal, disruption, and the next big shifts' },
-    { slug: 'sports', label: 'Sports', blurb: 'Fixtures, results, and major contests' },
-    { slug: 'entertainment', label: 'Entertainment', blurb: 'Film, music, culture, and celebrity news' },
-    { slug: 'science', label: 'Science', blurb: 'Research and environmental updates' },
-    { slug: 'health', label: 'Health', blurb: 'Medical reporting and wellbeing stories' },
-    { slug: 'favourites', label: 'Favourites', blurb: 'Your saved spotlight stories and must-reads' }
+    { slug: 'politics', label: 'Politics', key: 'categoryPolitics', blurb: 'Government and policy updates' },
+    { slug: 'world', label: 'World', key: 'categoryWorld', blurb: 'Global events and international stories' },
+    { slug: 'business', label: 'Business', key: 'categoryBusiness', blurb: 'Markets, brands, and industry moves' },
+    { slug: 'technology', label: 'Technology', key: 'categoryTechnology', blurb: 'AI, software, startups, and digital culture' },
+    { slug: 'ai-trends', label: 'AI & Trends', key: 'categoryAi', blurb: 'Signal, disruption, and the next big shifts' },
+    { slug: 'sports', label: 'Sports', key: 'categorySports', blurb: 'Fixtures, results, and major contests' },
+    { slug: 'entertainment', label: 'Entertainment', key: 'categoryEntertainment', blurb: 'Film, music, culture, and celebrity news' },
+    { slug: 'science', label: 'Science', key: 'categoryScience', blurb: 'Research and environmental updates' },
+    { slug: 'health', label: 'Health', key: 'categoryHealth', blurb: 'Medical reporting and wellbeing stories' },
+    { slug: 'daily-briefing', label: 'Daily briefing', key: 'categoryDailyBriefing', blurb: 'India and key regions in one briefing' },
+    { slug: 'favourites', label: 'Favourites', key: 'categoryFavourites', blurb: 'Your saved spotlight stories and must-reads' }
   ] %}
 
   {% for category in categoryList %}
     {% set itemCount = collections[category.slug] | length %}
     <article class="category-card">
       <a href="{{ ('/categories/' + category.slug + '/') | url }}">
-        <span class="category-tag">{{ category.label }}</span>
+        <span class="category-tag" data-i18n="{{ category.key }}">{{ category.label }}</span>
       </a>
       <small>{{ category.blurb }} • {{ itemCount }} live items</small>
+    </article>
+  {% endfor %}
+</section>
+
+<section class="page-header" style="margin-top: 2rem;">
+  <p class="eyebrow" data-i18n="subCategoriesHeading">ఉపవర్గాలు</p>
+  <h2 data-i18n="subCategoriesTitle">ఉద్యోగ అవకాశాలు</h2>
+</section>
+
+<section class="category-grid category-grid-wide">
+  {% for sub in dailyBriefingSubCategories %}
+    {% set subItems = collections[sub.slug] %}
+    <article class="category-card">
+      <div class="category-head">
+        <span class="category-tag" data-i18n="{{ sub.labelKey }}">{{ sub.defaultLabel }}</span>
+        <a href="{{ ('/categories/daily-briefing/#' + sub.slug) | url }}" data-i18n="viewAll">అన్నీ చూడండి</a>
+      </div>
+      <small>{{ subItems | length }} <span data-i18n="storiesAvailable">కథనాలు ఉన్నాయి</span></small>
     </article>
   {% endfor %}
 </section>

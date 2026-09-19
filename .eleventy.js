@@ -3,11 +3,12 @@ const path = require('path');
 const {
   CATEGORIES,
   SUB_CATEGORIES,
+  DAILY_BRIEFING_SUB_CATEGORIES,
   COUNTRY_SLUGS,
   COUNTRY_LABELS,
-  CATEGORY_LIMIT,
   SUB_CATEGORY_LIMIT,
   COUNTRY_LIMIT,
+  categoryLimit,
   countryLabel: formatCountryLabel,
   readCategory,
   readPool,
@@ -60,8 +61,8 @@ module.exports = function(eleventyConfig) {
     label: COUNTRY_LABELS[slug]
   })));
 
-  // Order of the job sub-category sections on the daily briefing page.
-  eleventyConfig.addGlobalData('subCategorySlugs', SUB_CATEGORIES);
+  // Order and labels of the job sub-category sections on the daily briefing page.
+  eleventyConfig.addGlobalData('dailyBriefingSubCategories', DAILY_BRIEFING_SUB_CATEGORIES);
 
   eleventyConfig.addFilter('readableDate', (dateObj) => {
     try {
@@ -99,7 +100,7 @@ module.exports = function(eleventyConfig) {
 
   categories.forEach((cat) => {
     eleventyConfig.addCollection(cat, () =>
-      readCategory(articlesRoot, cat).slice(0, CATEGORY_LIMIT)
+      readCategory(articlesRoot, cat).slice(0, categoryLimit(cat))
     );
   });
 

@@ -32,7 +32,7 @@ eleventyComputed:
   {% if items | length == 0 %}
     <div class="empty-panel" data-i18n="noRegionalStories">ఈ ప్రాంతానికి సంబంధించిన కథనాలు ఇంకా లేవు.</div>
   {% endif %}
-  {% for item in items %}
+  {% for item in items.slice(1) %}
     <article class="story-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
       <div class="story-meta">
         <span class="story-source {{ item.data.category }}">{{ country.label }}</span>

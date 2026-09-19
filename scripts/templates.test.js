@@ -56,11 +56,25 @@ test('elements translated via data-i18n never wrap other elements', () => {
 test('every daily briefing sub-category is rendered on the briefing page', () => {
   const template = fs.readFileSync(path.join(srcDir, 'categories', 'daily-briefing.njk'), 'utf8');
 
-  for (const slug of SUB_CATEGORIES) {
-    assert.equal(template.includes(`'${slug}'`), true, `${slug} must appear on the daily briefing page`);
-  }
+  assert.match(template, /for sub in dailyBriefingSubCategories/, 'the page must iterate the shared sub-category config');
+  assert.match(template, /id="\{\{ sub\.slug \}\}"/, 'each sub-category section needs a stable anchor');
 
-  assert.match(template, /for slug in subCategorySlugs/, 'the page must iterate the shared sub-category list');
+  for (const slug of SUB_CATEGORIES) {
+    assert.match(slug, /^[a-z0-9-]+$/, `${slug} must be usable as an anchor slug`);
+  }
+});
+
+test('the featured story is not repeated in the grid below it', () => {
+  const pages = [
+    ['categories', 'daily-briefing.njk'],
+    ['countries', 'dashboard.njk']
+  ];
+
+  for (const parts of pages) {
+    const template = fs.readFileSync(path.join(srcDir, ...parts), 'utf8');
+    const label = parts.join('/');
+    assert.match(template, /items\.slice\(1\)/, `${label} must skip the featured story in its grid`);
+  }
 });
 
 test('sitemap and robots are emitted with the expected permalinks', () => {

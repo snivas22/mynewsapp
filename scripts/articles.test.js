@@ -5,10 +5,15 @@ const os = require('node:os');
 const path = require('node:path');
 
 const {
+  ALL_CATEGORIES,
+  CATEGORIES,
   CATEGORY_LIMIT,
   COUNTRY_LIMIT,
   COUNTRY_SLUGS,
+  DAILY_BRIEFING_LIMIT,
+  DAILY_BRIEFING_SUB_CATEGORIES,
   SUB_CATEGORIES,
+  categoryLimit,
   countryLabel,
   countryCounts,
   normalizeCountry,
@@ -154,6 +159,26 @@ test('daily briefing job sub-categories stay out of the country pool', () => {
 test('display limits stay meaningful', () => {
   assert.equal(CATEGORY_LIMIT > 0, true);
   assert.equal(COUNTRY_LIMIT >= CATEGORY_LIMIT, true);
+});
+
+test('the daily briefing lists more stories than a normal category page', () => {
+  assert.equal(DAILY_BRIEFING_LIMIT > CATEGORY_LIMIT, true);
+  assert.equal(categoryLimit('daily-briefing'), DAILY_BRIEFING_LIMIT);
+  assert.equal(categoryLimit('politics'), CATEGORY_LIMIT);
+  assert.equal(categoryLimit('unknown-category'), CATEGORY_LIMIT);
+});
+
+test('sub-category config and slug list cannot drift apart', () => {
+  assert.deepEqual(
+    SUB_CATEGORIES,
+    DAILY_BRIEFING_SUB_CATEGORIES.map((sub) => sub.slug),
+    'SUB_CATEGORIES must be derived from the shared sub-category config'
+  );
+
+  for (const sub of DAILY_BRIEFING_SUB_CATEGORIES) {
+    assert.equal(CATEGORIES.includes(sub.slug), false, `${sub.slug} must not be a main category`);
+    assert.equal(ALL_CATEGORIES.includes(sub.slug), true, `${sub.slug} must still get a collection`);
+  }
 });
 
 test('normalizeCountry and countryLabel fall back sensibly', () => {
