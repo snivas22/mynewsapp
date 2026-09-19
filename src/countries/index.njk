@@ -9,14 +9,13 @@ title: Countries
 </section>
 
 <section class="category-grid category-grid-wide">
-  {% for country in site.countries %}
-    {% set items = collections['country_' + country.slug] %}
+  {% for country in collections.countriesOverview %}
     <article class="category-card">
       <div class="category-head">
         <span class="category-tag">{{ country.label }}</span>
-        <a href="{{ ('/countries/' + country.slug + '/') | url }}">View all</a>
+        <a href="{{ ('/countries/' + country.slug + '/') | url }}" data-i18n="viewAll">అన్నీ చూడండి</a>
       </div>
-      <small>{{ items | length }} stories available</small>
+      <small>{{ country.count }} <span data-i18n="storiesAvailable">కథనాలు ఉన్నాయి</span></small>
     </article>
   {% endfor %}
 </section>

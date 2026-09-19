@@ -1,0 +1,20 @@
+---
+permalink: "/sitemap.xml"
+eleventyExcludeFromCollections: true
+---
+{%- set declaration = '<?xml version="1.0" encoding="UTF-8"?>' -%}
+{{ declaration | safe }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>{{ site.baseUrl }}/</loc></url>
+  <url><loc>{{ site.baseUrl }}/categories/</loc></url>
+  <url><loc>{{ site.baseUrl }}/countries/</loc></url>
+{%- for category in site.categories %}
+
+  <url><loc>{{ site.baseUrl }}/categories/{{ category.slug }}/</loc></url>
+{%- endfor %}
+{%- for country in site.countries %}
+
+  <url><loc>{{ site.baseUrl }}/countries/{{ country.slug }}/</loc></url>
+{%- endfor %}
+
+</urlset>

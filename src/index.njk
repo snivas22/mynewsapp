@@ -27,7 +27,7 @@ title: Home
     {% for region in regionalLinks %}
       <a class="region-link" href="{{ ('/countries/' + region.slug + '/') | url if region.slug in ['india','andhra-pradesh','telangana','hyderabad'] else ('/categories/' + region.slug + '/') | url }}">
         <span class="region-name">{{ region.label }}</span>
-        <strong>{{ region.count }} stories</strong>
+        <strong>{{ region.count }} <span data-i18n="stories">కథనాలు</span></strong>
       </a>
     {% endfor %}
   </div>
@@ -138,11 +138,24 @@ title: Home
 
 {% set categories = ['politics','world','business','technology','ai-trends','sports','entertainment','science','health','favourites'] %}
 
+{% set categoryMeta = {
+  politics: { label: 'Politics', key: 'categoryPolitics' },
+  world: { label: 'World', key: 'categoryWorld' },
+  business: { label: 'Business', key: 'categoryBusiness' },
+  technology: { label: 'Technology', key: 'categoryTechnology' },
+  'ai-trends': { label: 'AI & Trends', key: 'categoryAi' },
+  sports: { label: 'Sports', key: 'categorySports' },
+  entertainment: { label: 'Entertainment', key: 'categoryEntertainment' },
+  science: { label: 'Science', key: 'categoryScience' },
+  health: { label: 'Health', key: 'categoryHealth' },
+  favourites: { label: 'Favourites', key: 'categoryFavourites' }
+} %}
+
 <section class="stats-row">
   {% for cat in categories %}
-    {% if cat == 'politics' %}{% set label = 'Politics' %}{% elseif cat == 'world' %}{% set label = 'World' %}{% elseif cat == 'business' %}{% set label = 'Business' %}{% elseif cat == 'technology' %}{% set label = 'Technology' %}{% elseif cat == 'ai-trends' %}{% set label = 'AI & Trends' %}{% elseif cat == 'sports' %}{% set label = 'Sports' %}{% elseif cat == 'entertainment' %}{% set label = 'Entertainment' %}{% elseif cat == 'science' %}{% set label = 'Science' %}{% elseif cat == 'health' %}{% set label = 'Health' %}{% else %}{% set label = 'Favourites' %}{% endif %}
+    {% set meta = categoryMeta[cat] %}
     <div class="stat-card">
-      <span>{{ label }}</span>
+      <span data-i18n="{{ meta.key }}">{{ meta.label }}</span>
       <strong>{{ collections[cat] | length }}</strong>
     </div>
   {% endfor %}
@@ -150,16 +163,16 @@ title: Home
 
 <section class="category-grid">
   {% for cat in categories %}
-    {% if cat == 'politics' %}{% set label = 'Politics' %}{% elseif cat == 'world' %}{% set label = 'World' %}{% elseif cat == 'business' %}{% set label = 'Business' %}{% elseif cat == 'technology' %}{% set label = 'Technology' %}{% elseif cat == 'ai-trends' %}{% set label = 'AI & Trends' %}{% elseif cat == 'sports' %}{% set label = 'Sports' %}{% elseif cat == 'entertainment' %}{% set label = 'Entertainment' %}{% elseif cat == 'science' %}{% set label = 'Science' %}{% elseif cat == 'health' %}{% set label = 'Health' %}{% else %}{% set label = 'Favourites' %}{% endif %}
+    {% set meta = categoryMeta[cat] %}
     {% set items = collections[cat] %}
     <article class="category-card" style="--card-accent: var(--{{ cat }});" data-searchable="{{ cat }}{% for item in items %} {{ item.data.title }}{% endfor %}">
       <div class="category-head">
-        <span class="category-tag {{ cat }}">{{ label }}</span>
-        <a href="{{ ('/categories/' + cat + '/') | url }}">View all</a>
+        <span class="category-tag {{ cat }}" data-i18n="{{ meta.key }}">{{ meta.label }}</span>
+        <a href="{{ ('/categories/' + cat + '/') | url }}" data-i18n="viewAll">అన్నీ చూడండి</a>
       </div>
 
       {% if items | length == 0 %}
-        <p class="empty-state">No stories available yet.</p>
+        <p class="empty-state" data-i18n="noStories">ఇంకా కథనాలు లేవు.</p>
       {% else %}
         <ul class="story-list compact">
           {% for item in items.slice(0, 3) %}

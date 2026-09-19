@@ -1,13 +1,25 @@
-const fs = require('fs');
 const path = require('path');
 
-const { parseFrontmatter } = require('./scripts/lib/frontmatter');
+const {
+  CATEGORIES,
+  COUNTRY_SLUGS,
+  COUNTRY_LABELS,
+  CATEGORY_LIMIT,
+  COUNTRY_LIMIT,
+  countryLabel: formatCountryLabel,
+  readCategory,
+  readPool,
+  byCountry,
+  countryCounts
+} = require('./scripts/lib/articles');
 
 module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/assets');
 
   const now = new Date();
   eleventyConfig.addGlobalData('site', {
+    baseUrl: 'https://snivas22.github.io/mynewsapp',
+    description: 'లైవ్ వార్తా డాష్‌బోర్డ్ - రాజకీయాలు, వ్యాపారం, సాంకేతికత, క్రీడలు మరియు మరిన్ని.',
     lastUpdated: now.toISOString(),
     currentDateLabel: now.toLocaleDateString('en-US', {
       weekday: 'long',
@@ -39,6 +51,12 @@ module.exports = function(eleventyConfig) {
     ]
   });
 
+  // Top-level list used by the country dashboard template's pagination.
+  eleventyConfig.addGlobalData('countryList', COUNTRY_SLUGS.map((slug) => ({
+    slug,
+    label: COUNTRY_LABELS[slug]
+  })));
+
   eleventyConfig.addFilter('readableDate', (dateObj) => {
     try {
       const d = new Date(dateObj);
@@ -58,91 +76,41 @@ module.exports = function(eleventyConfig) {
     });
   });
 
-  eleventyConfig.addFilter('countryLabel', (value) => {
-    const country = String(value || 'global').trim().toLowerCase();
-    const labels = {
-      global: 'Global',
-      uk: 'United Kingdom',
-      us: 'United States',
-      india: 'India',
-      'andhra-pradesh': 'Andhra Pradesh',
-      telangana: 'Telangana',
-      hyderabad: 'Hyderabad',
-      australia: 'Australia',
-      uae: 'UAE'
-    };
+  eleventyConfig.addFilter('countryLabel', (value) => formatCountryLabel(value));
 
-    return labels[country] || country.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-  });
-
-  const categories = ['politics','world','business','technology','sports','entertainment','science','health','ai-trends','india','andhra-pradesh','telangana','hyderabad','daily-briefing','favourites'];
+  const categories = CATEGORIES;
+  const countrySlugs = COUNTRY_SLUGS;
   const articlesRoot = path.join(__dirname, 'src', 'articles');
 
-  function buildCategoryItems(cat) {
-    const categoryDir = path.join(articlesRoot, cat);
-    if (!fs.existsSync(categoryDir)) return [];
-
-    return fs.readdirSync(categoryDir)
-      .filter(file => file.endsWith('.md'))
-      .map(file => {
-        const fullPath = path.join(categoryDir, file);
-        const content = fs.readFileSync(fullPath, 'utf8');
-        const { data, body } = parseFrontmatter(content);
-        const title = data.title || file.replace(/\.md$/, '').replace(/-/g, ' ');
-        const date = data.date || fs.statSync(fullPath).mtime.toISOString();
-        const source = data.source || 'Open source feed';
-        const originalLink = data.original_link || '#';
-        const country = data.country || 'global';
-
-        return {
-          inputPath: `src/articles/${cat}/${file}`,
-          url: originalLink,
-          date,
-          templateContent: body,
-          data: {
-            title,
-            category: cat,
-            source,
-            original_link: originalLink,
-            date,
-            country
-          }
-        };
-      })
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 8);
+  // The full story pool is expensive to read, so cache it for the duration of
+  // one build and invalidate it before the next one (watch/serve friendly).
+  let pool = null;
+  function getPool() {
+    if (!pool) pool = readPool(articlesRoot);
+    return pool;
   }
+  eleventyConfig.on('eleventy.before', () => { pool = null; });
 
-  categories.forEach(cat => {
-    eleventyConfig.addCollection(cat, () => buildCategoryItems(cat));
-  });
-
-  const countrySlugs = ['uk', 'us', 'india', 'andhra-pradesh', 'telangana', 'hyderabad', 'australia', 'uae'];
-  countrySlugs.forEach((country) => {
-    eleventyConfig.addCollection(`country_${country}`, (collectionApi) =>
-      collectionApi.getAll()
-        .filter((item) => {
-          const itemCountry = String(item?.data?.country || item?.country || '').trim().toLowerCase() || 'global';
-          return itemCountry === country;
-        })
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
+  categories.forEach((cat) => {
+    eleventyConfig.addCollection(cat, () =>
+      readCategory(articlesRoot, cat).slice(0, CATEGORY_LIMIT)
     );
   });
 
-  eleventyConfig.addCollection('countriesOverview', () => countrySlugs.map((slug) => ({
-    slug,
-    label: {
-      uk: 'United Kingdom',
-      us: 'United States',
-      india: 'India',
-      'andhra-pradesh': 'Andhra Pradesh',
-      telangana: 'Telangana',
-      hyderabad: 'Hyderabad',
-      australia: 'Australia',
-      uae: 'UAE'
-    }[slug],
-    count: 0
-  })));
+  countrySlugs.forEach((country) => {
+    eleventyConfig.addCollection(`country_${country}`, () =>
+      byCountry(getPool(), country).slice(0, COUNTRY_LIMIT)
+    );
+  });
+
+  eleventyConfig.addCollection('countriesOverview', () => {
+    const counts = countryCounts(getPool());
+    return countrySlugs.map((slug) => ({
+      slug,
+      label: COUNTRY_LABELS[slug],
+      count: counts[slug]
+    }));
+  });
 
   return {
     dir: {

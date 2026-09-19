@@ -3,14 +3,32 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="లైవ్ వార్తా డాష్‌బోర్డ్ - రాజకీయాలు, వ్యాపారం, సాంకేతికత, క్రీడలు మరియు మరిన్ని.">
-    <title>{{ title or 'News Aggregator' }}</title>
+    {% set metaTitle = (title + ' | NewsPulse') if title and title != 'Home' else 'NewsPulse' %}
+    {% set metaDescription = description or site.description %}
+    <meta name="description" content="{{ metaDescription }}">
+    <title>{{ metaTitle }}</title>
+    <link rel="canonical" href="{{ site.baseUrl }}{{ page.url }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="NewsPulse">
+    <meta property="og:title" content="{{ metaTitle }}">
+    <meta property="og:description" content="{{ metaDescription }}">
+    <meta property="og:url" content="{{ site.baseUrl }}{{ page.url }}">
+    <meta property="og:locale" content="te_IN">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ metaTitle }}">
+    <meta name="twitter:description" content="{{ metaDescription }}">
+    <meta name="theme-color" content="#0b1020">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1020'/%3E%3Ctext x='16' y='23' font-family='sans-serif' font-size='19' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EN%3C/text%3E%3C/svg%3E">
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"WebSite","name":"NewsPulse","url":"{{ site.baseUrl }}/","inLanguage":["te","en"]}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ '/assets/style.css' | url }}">
   </head>
   <body>
+    <a class="skip-link" href="#main-content" data-i18n="skipToContent">ప్రధాన కంటెంట్‌కు వెళ్లండి</a>
     <div class="page-shell">
       <header class="topbar">
         <div class="brand-wrap">
@@ -75,29 +93,30 @@
 
       <div class="ticker-wrap" aria-label="Breaking news ticker">
         <div class="ticker-label">LIVE</div>
+        {% set liveCategories = ['politics','world','business','technology','ai-trends','sports','entertainment','science','health'] %}
+        {% set tickerTitles = [] %}
+        {% for cat in liveCategories %}
+          {% set item = collections[cat][0] %}
+          {% if item and item.data.title not in tickerTitles %}
+            {% set _pushed = tickerTitles.push(item.data.title) %}
+          {% endif %}
+        {% endfor %}
         <div class="ticker-track">
-          {% set liveCategories = ['politics','world','business','technology','ai-trends','sports','entertainment','science','health'] %}
-          {% for cat in liveCategories %}
-            {% set item = collections[cat][0] %}
-            {% if item %}
-              <span>{{ item.data.title }}</span>
-            {% endif %}
+          {% for newsTitle in tickerTitles %}
+            <span>{{ newsTitle }}</span>
           {% endfor %}
-          {% for cat in liveCategories %}
-            {% set item = collections[cat][0] %}
-            {% if item %}
-              <span>{{ item.data.title }}</span>
-            {% endif %}
+          {% for newsTitle in tickerTitles %}
+            <span>{{ newsTitle }}</span>
           {% endfor %}
         </div>
       </div>
 
-      <main class="content-wrap">
+      <main class="content-wrap" id="main-content">
         {{ content | safe }}
       </main>
 
       <footer class="site-footer">
-        <p data-i18n="footerText">Eleventy తో రూపొందించబడింది • పబ్లిక్ RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది <span data-last-updated="{{ site.lastUpdated }}">ఇప్పుడే</span></p>
+        <p class="footer-line"><span data-i18n="footerText">Eleventy తో రూపొందించబడింది • పబ్లిక్ RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది</span> <span data-last-updated="{{ site.lastUpdated }}">ఇప్పుడే</span></p>
       </footer>
     </div>
 
@@ -152,13 +171,18 @@
           savedLabel: 'Saved',
           justNow: 'just now',
           minutesAgo: 'minutes ago',
+          skipToContent: 'Skip to main content',
+          countryIntro: 'Politics, business, technology, and civic updates from this region, gathered in one place.',
+          topUpdate: 'Top update',
+          noRegionalStories: 'No stories are available for this region yet.',
+          stories: 'stories',
           liveDesk: 'LIVE DESK',
           feedActive: 'RSS stream active',
           feedSchedule: 'Updated automatically on schedule',
           liveReport: 'LIVE REPORT',
           globalBriefing: 'Global Briefing',
           liveDescription: 'The briefing you need before the next headline lands.',
-          footerText: 'Generated with Eleventy • Public RSS feeds refreshed automatically • Last refreshed just now',
+          footerText: 'Generated with Eleventy • Public RSS feeds refreshed automatically • Last refreshed',
           readOriginal: 'Read original',
           readArticle: 'Read article',
           save: 'Save',
@@ -229,13 +253,18 @@
           savedLabel: 'సేవ్ చేయబడింది',
           justNow: 'ఇప్పుడే',
           minutesAgo: 'నిమిషాల క్రితం',
+          skipToContent: 'ప్రధాన కంటెంట్‌కు వెళ్లండి',
+          countryIntro: 'ఈ ప్రాంతం నుండి రాజకీయాలు, వ్యాపారం, సాంకేతికత మరియు పౌర అప్‌డేట్లను ఒకే చోట చూడండి.',
+          topUpdate: 'టాప్ అప్‌డేట్',
+          noRegionalStories: 'ఈ ప్రాంతానికి సంబంధించిన కథనాలు ఇంకా లేవు.',
+          stories: 'కథనాలు',
           liveDesk: 'లైవ్ డెస్క్',
           feedActive: 'RSS స్ట్రీమ్ క్రియాశీలంగా ఉంది',
           feedSchedule: 'షెడ్యూల్ ప్రకారం ఆటోమేటిక్గా అప్‌డేట్ అవుతోంది',
           liveReport: 'లైవ్ రిపోర్ట్',
           globalBriefing: 'గ్లోబల్ బ్రీఫింగ్',
           liveDescription: 'తదుపరి ముఖ్యమైన వివరాల కంటే ముందే అవసరమైన నివేదిక.',
-          footerText: 'Eleventy తో రూపొందించబడింది • పబ్లిక్ RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది ఇప్పుడు',
+          footerText: 'Eleventy తో రూపొందించబడింది • పబ్లిక్ RSS ఫీడ్లు ఆటోమేటిక్గా తాజాకరించబడతాయి • చివరిగా అప్‌డేట్ చేయబడింది',
           readOriginal: 'అసలు చదవండి',
           readArticle: 'కథనాన్ని చదవండి',
           save: 'సేవ్ చేయండి',

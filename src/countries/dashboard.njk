@@ -1,0 +1,49 @@
+---
+layout: base.njk
+pagination:
+  data: countryList
+  size: 1
+  alias: country
+permalink: "/countries/{{ country.slug }}/index.html"
+eleventyComputed:
+  title: "{{ country.label }}"
+---
+
+{% set items = collections['country_' + country.slug] %}
+{% set topItem = items[0] %}
+
+<section class="regional-hero">
+  <div class="regional-copy">
+    <p class="eyebrow" data-i18n="regionalBriefing">ప్రాంతీయ నివేదిక</p>
+    <h2>{{ country.label }}</h2>
+    <p data-i18n="countryIntro">ఈ ప్రాంతం నుండి రాజకీయాలు, వ్యాపారం, సాంకేతికత మరియు పౌర అప్‌డేట్లను ఒకే చోట చూడండి.</p>
+  </div>
+
+  {% if topItem %}
+    <article class="regional-feature">
+      <span class="mini-label" data-i18n="topUpdate">టాప్ అప్‌డేట్</span>
+      <h3><a href="{{ topItem.url }}">{{ topItem.data.title }}</a></h3>
+      <p>{{ topItem.templateContent | striptags | truncate(180) }}</p>
+    </article>
+  {% endif %}
+</section>
+
+<div class="story-grid">
+  {% if items | length == 0 %}
+    <div class="empty-panel" data-i18n="noRegionalStories">ఈ ప్రాంతానికి సంబంధించిన కథనాలు ఇంకా లేవు.</div>
+  {% endif %}
+  {% for item in items %}
+    <article class="story-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
+      <div class="story-meta">
+        <span class="story-source {{ item.data.category }}">{{ country.label }}</span>
+        <span>{{ item.date | readableDate }}</span>
+      </div>
+      <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
+      <p>{{ item.templateContent | striptags | truncate(180) }}</p>
+      <div class="story-actions">
+        <a class="read-more" href="{{ item.url }}" data-i18n="readArticle">కథనాన్ని చదవండి</a>
+        <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" data-i18n="save">సేవ్ చేయండి</button>
+      </div>
+    </article>
+  {% endfor %}
+</div>
