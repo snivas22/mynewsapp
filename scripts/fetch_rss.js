@@ -3,6 +3,15 @@ const fs = require('fs');
 const path = require('path');
 
 const { parseFrontmatter, serializeFrontmatter } = require('./lib/frontmatter');
+const {
+  GENERAL_JOB_SOURCES,
+  SEARCHABLE_JOB_SOURCES,
+  matchesJobTerms,
+  jobBoardFromSourceLabel,
+  normalizeJobPosting,
+  normalizeRssJobPosting
+} = require('./lib/jobs');
+const { SUB_CATEGORIES } = require('./lib/articles');
 
 const parser = new Parser();
 
@@ -102,7 +111,46 @@ const feedsByCategory = {
     'https://news.google.com/rss/search?q=Full+stack+Java+developer+openings&hl=en-IN&gl=IN&ceid=IN:en',
     'https://news.google.com/rss/search?q=Java+full+stack+engineer+job&hl=en-IN&gl=IN&ceid=IN:en'
   ],
+  'it-jobs': [
+    'https://news.google.com/rss/search?q=IT+jobs+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=software+engineer+jobs+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=IT+hiring+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=tech+jobs+India&hl=en-IN&gl=IN&ceid=IN:en'
+  ],
+  'freshers-jobs': [
+    'https://news.google.com/rss/search?q=freshers+jobs+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=entry+level+jobs+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=graduate+hiring+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=internship+India&hl=en-IN&gl=IN&ceid=IN:en'
+  ],
+  'government-jobs': [
+    'https://news.google.com/rss/search?q=government+jobs+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=government+job+notification&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=public+sector+jobs+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=sarkari+naukri+notification&hl=en-IN&gl=IN&ceid=IN:en'
+  ],
+  'hyderabad-jobs': [
+    'https://news.google.com/rss/search?q=Hyderabad+jobs&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Hyderabad+hiring&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Hyderabad+IT+jobs&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Hyderabad+walk+in+drives&hl=en-IN&gl=IN&ceid=IN:en'
+  ],
   favourites: []
+};
+
+/**
+ * Real job postings merged into the job sub-categories from public job boards.
+ *
+ * `tags` are sent to the tag-based source. `match` terms are applied to every
+ * posting (including tag results, which are only loosely related) before it is
+ * accepted. Postings are claimed by the first section that matches, so nothing
+ * is listed twice.
+ */
+const jobBoardsByCategory = {
+  'java-developer-jobs': { tags: ['java'], match: ['java'] },
+  'java-full-stack-jobs': { tags: ['full-stack'], match: ['full stack', 'fullstack'] },
+  'it-jobs': { tags: ['devops', 'python', 'javascript'], match: ['engineer', 'developer', 'devops', 'programmer'] },
+  'freshers-jobs': { tags: ['entry-level'], match: ['fresher', 'entry level', 'graduate', 'intern', 'junior', 'trainee'] }
 };
 
 // Categories whose feed URL itself identifies the region, so the region is read
@@ -111,6 +159,10 @@ const REGIONAL_SOURCE_CATEGORIES = [
   'daily-briefing',
   'java-developer-jobs',
   'java-full-stack-jobs',
+  'it-jobs',
+  'freshers-jobs',
+  'government-jobs',
+  'hyderabad-jobs',
   'india',
   'andhra-pradesh',
   'telangana',
@@ -278,12 +330,15 @@ function mergeCategoryArticles(existing = [], incoming = [], limit = 80) {
   for (const article of [...existing, ...incoming]) {
     if (!article || !article.link || !article.title) continue;
     const key = `${article.link}|${article.title}`;
-    if (!merged.has(key)) {
-      merged.set(key, {
-        ...article,
-        country: normalizeRegionToken(article.country || article.region || 'global')
-      });
-    }
+
+    // A freshly fetched copy refreshes the stored one instead of being dropped,
+    // so new fields (such as the job-board marker) survive the markdown
+    // round-trip. Order is re-established by the sort below.
+    merged.set(key, {
+      ...(merged.get(key) || {}),
+      ...article,
+      country: normalizeRegionToken(article.country || article.region || 'global')
+    });
   }
 
   return Array.from(merged.values())
@@ -308,9 +363,99 @@ function readExistingCategoryArticles(categoryDir) {
       const date = data.date || new Date().toISOString();
       const country = normalizeRegionToken(data.country || 'global');
 
-      return { title, link, source, date, country, category: data.category || 'general' };
+      return { title, link, source, date, country, category: data.category || 'general', jobBoard: data.job_board || jobBoardFromSourceLabel(source) };
     })
     .filter(Boolean);
+}
+
+/** Parse a job-board payload (JSON API or RSS feed) into article-shaped postings. */
+async function parseJobBoardPayload(source, text, fallbackDate) {
+  if (source.kind === 'json') {
+    let payload;
+    try {
+      payload = JSON.parse(text);
+    } catch (err) {
+      console.warn(`Job source ${source.id} returned invalid JSON: ${err.message}`);
+      return [];
+    }
+
+    return source
+      .pick(payload)
+      .map((raw) => normalizeJobPosting(source.id, raw, fallbackDate))
+      .filter(Boolean);
+  }
+
+  const feed = await parser.parseString(text);
+  const items = Array.isArray(feed.items) ? feed.items : [];
+  return items
+    .map((item) => normalizeRssJobPosting(source.id, item, fallbackDate))
+    .filter(Boolean);
+}
+
+/**
+ * Poll every job board once per run. Searchable sources are queried once per
+ * unique keyword and the results are reused across categories.
+ */
+async function fetchJobBoardCache() {
+  const fallbackDate = new Date().toISOString();
+  const general = new Map();
+  const searchable = new Map();
+
+  for (const source of GENERAL_JOB_SOURCES) {
+    try {
+      const text = await fetchWithRetry(source.url(), 2, 20000);
+      const postings = await parseJobBoardPayload(source, text, fallbackDate);
+      general.set(source.id, postings);
+      console.log(`Job board ${source.label}: ${postings.length} postings`);
+    } catch (err) {
+      console.warn(`Job board ${source.label} failed: ${err.message}`);
+      general.set(source.id, []);
+    }
+  }
+
+  const terms = [...new Set(Object.values(jobBoardsByCategory).flatMap((config) => config.tags))];
+
+  for (const source of SEARCHABLE_JOB_SOURCES) {
+    for (const term of terms) {
+      try {
+        const text = await fetchWithRetry(source.url(term), 2, 20000);
+        const postings = await parseJobBoardPayload(source, text, fallbackDate);
+        searchable.set(`${source.id}:${term}`, postings);
+      } catch (err) {
+        console.warn(`Job board ${source.label} ("${term}") failed: ${err.message}`);
+        searchable.set(`${source.id}:${term}`, []);
+      }
+    }
+  }
+
+  return { general, searchable };
+}
+
+/**
+ * Postings for one category. Query results are often only loosely related, so
+ * every posting is filtered by the category's `match` terms.
+ */
+function collectJobPostingsForCategory(cache, config, claimed = new Set()) {
+  const accepted = [];
+
+  // General feeds are unfiltered, so a posting must name the keyword in its
+  // title to stay relevant. Tag queries already filtered server-side, so a hit
+  // anywhere in the posting is good enough.
+  const matchesTitle = (job) => matchesJobTerms(job.title, config.match);
+  const matchesPosting = (job) => matchesJobTerms(`${job.title} ${job.summary}`, config.match);
+
+  for (const postings of cache.general.values()) {
+    accepted.push(...postings.filter(matchesTitle));
+  }
+
+  for (const tag of config.tags) {
+    for (const source of SEARCHABLE_JOB_SOURCES) {
+      const postings = cache.searchable.get(`${source.id}:${tag}`) || [];
+      accepted.push(...postings.filter(matchesPosting));
+    }
+  }
+
+  return dedupeArticles(accepted).filter((job) => !claimed.has(job.link));
 }
 
 async function fetchAndWrite() {
@@ -321,6 +466,14 @@ async function fetchAndWrite() {
     const categoryDir = path.join(articlesDir, category);
     fs.mkdirSync(categoryDir, { recursive: true });
   }
+
+  const jobBoardCache = Object.keys(jobBoardsByCategory).length > 0
+    ? await fetchJobBoardCache()
+    : { general: new Map(), searchable: new Map() };
+
+  // Sub-category sections sit side by side, so a story claimed by an earlier
+  // (more specific) section must not be repeated in a later one.
+  const claimedSubCategoryLinks = new Set();
 
   for (const [category, feeds] of Object.entries(feedsByCategory)) {
     const categoryDir = path.join(articlesDir, category);
@@ -365,6 +518,42 @@ async function fetchAndWrite() {
       }
     }
 
+    const jobConfig = jobBoardsByCategory[category];
+    if (jobConfig) {
+      const postings = collectJobPostingsForCategory(jobBoardCache, jobConfig, claimedSubCategoryLinks);
+
+      for (const posting of postings) {
+        collected.push({
+          title: posting.title,
+          link: posting.link,
+          source: posting.source,
+          date: posting.date,
+          category,
+          summary: posting.summary,
+          jobBoard: posting.jobBoard,
+          country: resolveArticleCountry(category, posting.link, posting.title, posting.summary)
+        });
+      }
+
+      console.log(`  job boards contributed ${postings.length} postings to ${category}`);
+    }
+
+    if (SUB_CATEGORIES.includes(category)) {
+      const seen = new Set();
+      const unique = [];
+
+      for (const entry of collected) {
+        if (!entry.link || claimedSubCategoryLinks.has(entry.link) || seen.has(entry.link)) continue;
+        seen.add(entry.link);
+        unique.push(entry);
+      }
+
+      collected.length = 0;
+      collected.push(...unique);
+
+      for (const entry of unique) claimedSubCategoryLinks.add(entry.link);
+    }
+
     const mergedArticles = mergeCategoryArticles(existingArticles, dedupeArticles(collected), category === 'favourites' ? 40 : 120);
     let count = 0;
 
@@ -372,14 +561,20 @@ async function fetchAndWrite() {
       const slug = slugify(`${article.title}-${article.link}`);
       const filename = path.join(categoryDir, `${slug}.md`);
       const body = `${article.summary || 'No summary available.'}\n\n[Read original article](${article.link})`;
-      const md = serializeFrontmatter({
+      const frontmatter = {
         title: article.title,
         date: article.date,
         category: article.category,
         source: article.source,
         original_link: article.link,
         country: normalizeRegionToken(article.country || 'global')
-      }, body);
+      };
+
+      // Marks a posting as coming from a job board, so job sections can mix
+      // postings with editorial stories instead of newest-wins ordering.
+      if (article.jobBoard) frontmatter.job_board = article.jobBoard;
+
+      const md = serializeFrontmatter(frontmatter, body);
 
       fs.writeFileSync(filename, md, 'utf8');
       count++;
@@ -404,7 +599,9 @@ if (require.main === module) {
 
 module.exports = {
   feedsByCategory,
+  jobBoardsByCategory,
   REGIONAL_SOURCE_CATEGORIES,
+  collectJobPostingsForCategory,
   normalizeRegionToken,
   mergeCategoryArticles,
   resolveArticleCountry,

@@ -2,7 +2,9 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const pkg = require('../package.json');
 
-const { feedsByCategory, REGIONAL_SOURCE_CATEGORIES, normalizeRegionToken, mergeCategoryArticles, resolveArticleCountry } = require('./fetch_rss.js');
+const { feedsByCategory, jobBoardsByCategory, REGIONAL_SOURCE_CATEGORIES, collectJobPostingsForCategory, normalizeRegionToken, mergeCategoryArticles, resolveArticleCountry } = require('./fetch_rss.js');
+const { DAILY_BRIEFING_SUB_CATEGORIES, SUB_CATEGORIES } = require('./lib/articles');
+const { JOB_BOARD_IDS } = require('./lib/jobs');
 
 test('npm ci should not trigger live fetch/build during install', () => {
   assert.equal(pkg.scripts.prepare, undefined);
@@ -52,6 +54,67 @@ test('daily briefing job sub-categories have live RSS feeds', () => {
 
   assert.match(feedsByCategory['java-developer-jobs'].join(' '), /Java\+developer\+jobs/);
   assert.match(feedsByCategory['java-full-stack-jobs'].join(' '), /full\+stack/);
+});
+
+test('every daily briefing sub-category has news feeds', () => {
+  for (const sub of DAILY_BRIEFING_SUB_CATEGORIES) {
+    const feeds = feedsByCategory[sub.slug];
+    assert.ok(Array.isArray(feeds) && feeds.length > 0, `${sub.slug} has no news feeds`);
+
+    for (const url of feeds) {
+      assert.match(url, /^https:\/\/news\.google\.com\/rss\/search\?q=/, `${sub.slug} feed must be a Google News RSS search`);
+    }
+  }
+});
+
+test('mergeCategoryArticles refreshes stored entries with freshly fetched fields', () => {
+  const existing = [
+    { title: 'Java Engineer', link: 'https://x.dev/1', date: '2026-09-01T00:00:00.000Z', source: 'Jobicy' }
+  ];
+  const incoming = [
+    { title: 'Java Engineer', link: 'https://x.dev/1', date: '2026-09-01T00:00:00.000Z', source: 'Jobicy', jobBoard: 'jobicy' }
+  ];
+
+  const merged = mergeCategoryArticles(existing, incoming, 10);
+
+  assert.equal(merged.length, 1, 'duplicates must still collapse');
+  assert.equal(merged[0].jobBoard, 'jobicy', 'the fresh copy must win so new fields persist');
+});
+
+test('job postings are filtered by title, or title plus summary for tag sources', () => {
+  const cache = {
+    general: new Map([['remoteok', [
+      { title: 'Java Engineer', link: 'https://general-title', summary: 'Build services' },
+      { title: 'Marketing Lead', link: 'https://general-summary-only', summary: 'We use Java' }
+    ]]]),
+    searchable: new Map([['jobicy:java', [
+      { title: 'Senior Software Engineer', link: 'https://tag-summary', summary: 'Java and Spring' },
+      { title: 'Sales Executive', link: 'https://tag-irrelevant', summary: 'No tech here' }
+    ]]])
+  };
+
+  const accepted = collectJobPostingsForCategory(cache, { tags: ['java'], match: ['java'] });
+  assert.deepEqual(accepted.map((job) => job.link).sort(), ['https://general-title', 'https://tag-summary']);
+});
+
+test('a posting claimed by an earlier sub-category is not repeated', () => {
+  const cache = {
+    general: new Map([['remoteok', [{ title: 'Java Engineer', link: 'https://shared', summary: '' }]]]),
+    searchable: new Map()
+  };
+
+  const accepted = collectJobPostingsForCategory(cache, { tags: [], match: ['java'] }, new Set(['https://shared']));
+  assert.deepEqual(accepted, []);
+});
+
+test('job board sources feed real sub-categories from multiple sites', () => {
+  assert.equal(JOB_BOARD_IDS.length >= 3, true, 'expected several job boards, not just one');
+
+  for (const [category, config] of Object.entries(jobBoardsByCategory)) {
+    assert.equal(SUB_CATEGORIES.includes(category), true, `${category} must be a daily briefing sub-category`);
+    assert.equal(config.tags.length > 0, true, `${category} needs tag queries`);
+    assert.equal(config.match.length > 0, true, `${category} needs match terms`);
+  }
 });
 
 test('job sub-categories resolve their region from the feed URL', () => {

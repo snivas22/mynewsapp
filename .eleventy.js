@@ -12,6 +12,7 @@ const {
   countryLabel: formatCountryLabel,
   readCategory,
   readPool,
+  mixJobSection,
   byCountry,
   countryCounts
 } = require('./scripts/lib/articles');
@@ -108,7 +109,7 @@ module.exports = function(eleventyConfig) {
   // country pool so job-market news never lands on a regional dashboard.
   SUB_CATEGORIES.forEach((cat) => {
     eleventyConfig.addCollection(cat, () =>
-      readCategory(articlesRoot, cat).slice(0, SUB_CATEGORY_LIMIT)
+      mixJobSection(readCategory(articlesRoot, cat), SUB_CATEGORY_LIMIT)
     );
   });
 

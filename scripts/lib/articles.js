@@ -15,6 +15,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { parseFrontmatter } = require('./frontmatter');
+const { jobBoardFromSourceLabel } = require('./jobs');
 
 const CATEGORIES = [
   'politics',
@@ -57,6 +58,34 @@ const DAILY_BRIEFING_SUB_CATEGORIES = [
     blurbKey: 'subJavaFullStackJobsBlurb',
     defaultLabel: 'జావా ఫుల్ స్టాక్ డెవలపర్ ఉద్యోగాలు',
     defaultBlurb: 'జావా ఫుల్ స్టాక్ డెవలపర్ పాత్రల కోసం లైవ్ నియామక వార్తలు.'
+  },
+  {
+    slug: 'it-jobs',
+    labelKey: 'subItJobs',
+    blurbKey: 'subItJobsBlurb',
+    defaultLabel: 'IT & సాఫ్ట్‌వేర్ ఉద్యోగాలు',
+    defaultBlurb: 'IT మరియు సాఫ్ట్‌వేర్ పాత్రల కోసం లైవ్ నియామక వార్తలు.'
+  },
+  {
+    slug: 'freshers-jobs',
+    labelKey: 'subFreshersJobs',
+    blurbKey: 'subFreshersJobsBlurb',
+    defaultLabel: 'ఫ్రెషర్స్ & ఇంటర్న్‌షిప్‌లు',
+    defaultBlurb: 'ఫ్రెషర్లు మరియు ఇంటర్న్‌షిప్‌ల కోసం లైవ్ అవకాశాలు.'
+  },
+  {
+    slug: 'government-jobs',
+    labelKey: 'subGovernmentJobs',
+    blurbKey: 'subGovernmentJobsBlurb',
+    defaultLabel: 'ప్రభుత్వ ఉద్యోగాలు',
+    defaultBlurb: 'ప్రభుత్వ ఉద్యోగ నోటిఫికేషన్లు మరియు నియామక అప్‌డేట్లు.'
+  },
+  {
+    slug: 'hyderabad-jobs',
+    labelKey: 'subHyderabadJobs',
+    blurbKey: 'subHyderabadJobsBlurb',
+    defaultLabel: 'హైదరాబాద్ ఉద్యోగాలు',
+    defaultBlurb: 'హైదరాబాద్ మరియు పరిసర ప్రాంతాల ఉద్యోగ అవకాశాలు.'
   }
 ];
 
@@ -126,7 +155,10 @@ function toItem(cat, file, raw, mtimeIso) {
       source: data.source || 'Open source feed',
       original_link: originalLink,
       date,
-      country: normalizeCountry(data.country)
+      country: normalizeCountry(data.country),
+      // Set only for job-board postings; empty for editorial stories. Archived
+      // postings predate the marker, so fall back to the source label.
+      job_board: String(data.job_board || jobBoardFromSourceLabel(data.source) || '')
     }
   };
 }
@@ -185,6 +217,34 @@ function readPool(articlesRoot, options = {}) {
 }
 
 /**
+ * Build a sub-category section that shows both job-board postings and news.
+ *
+ * Plain date ordering lets one kind crowd the other out, so take half the
+ * quota from each group, top up from whatever is left, then order by date.
+ */
+function mixJobSection(items, limit) {
+  const all = items || [];
+  const postings = all.filter((item) => item.data && item.data.job_board);
+  const news = all.filter((item) => !(item.data && item.data.job_board));
+  const quota = Math.ceil(limit / 2);
+
+  const picked = [
+    ...postings.slice(0, quota),
+    ...news.slice(0, Math.max(0, limit - Math.min(postings.length, quota)))
+  ];
+
+  if (picked.length < limit) {
+    const chosen = new Set(picked);
+    const remaining = [...postings, ...news].filter((item) => !chosen.has(item));
+    picked.push(...remaining.slice(0, limit - picked.length));
+  }
+
+  return picked
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, limit);
+}
+
+/**
  * Filter pool items by their region slug.
  */
 function byCountry(items, country) {
@@ -225,6 +285,7 @@ module.exports = {
   countryLabel,
   readCategory,
   readPool,
+  mixJobSection,
   byCountry,
   countryCounts,
   dedupeByLink

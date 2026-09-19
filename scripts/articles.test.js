@@ -19,6 +19,7 @@ const {
   normalizeCountry,
   readCategory,
   readPool,
+  mixJobSection,
   byCountry,
   dedupeByLink
 } = require('./lib/articles');
@@ -166,6 +167,58 @@ test('the daily briefing lists more stories than a normal category page', () => 
   assert.equal(categoryLimit('daily-briefing'), DAILY_BRIEFING_LIMIT);
   assert.equal(categoryLimit('politics'), CATEGORY_LIMIT);
   assert.equal(categoryLimit('unknown-category'), CATEGORY_LIMIT);
+});
+
+function makeItems(prefix, count, startDay, jobBoard) {
+  return Array.from({ length: count }, (_, index) => ({
+    inputPath: `${prefix}${index}`,
+    date: new Date(Date.UTC(2026, 8, startDay - index)).toISOString(),
+    data: { title: `${prefix} ${index}`, job_board: jobBoard }
+  }));
+}
+
+test('job sections mix board postings with editorial news', () => {
+  const items = [
+    ...makeItems('posting', 10, 19, 'jobicy'),
+    ...makeItems('news', 10, 9, '')
+  ];
+
+  const mixed = mixJobSection(items, 6);
+
+  assert.equal(mixed.length, 6);
+  assert.equal(mixed.filter((item) => item.data.job_board).length, 3);
+  assert.equal(mixed.filter((item) => !item.data.job_board).length, 3);
+  assert.equal(new Date(mixed[0].date) >= new Date(mixed[5].date), true, 'newest first');
+});
+
+test('job sections top up from the other group when one is short', () => {
+  const items = [
+    ...makeItems('posting', 1, 19, 'jobicy'),
+    ...makeItems('news', 10, 9, '')
+  ];
+
+  const mixed = mixJobSection(items, 6);
+
+  assert.equal(mixed.length, 6);
+  assert.equal(mixed.filter((item) => item.data.job_board).length, 1);
+  assert.equal(mixed.filter((item) => !item.data.job_board).length, 5);
+  assert.deepEqual(mixJobSection([], 6), []);
+});
+
+test('archived postings are recognized as job-board items from their source label', () => {
+  const root = makeFixture();
+
+  writeArticle(root, 'it-jobs', 'archived-posting', {
+    title: 'Senior Java Engineer',
+    date: '2026-08-05T00:00:00.000Z',
+    category: 'it-jobs',
+    source: 'Jobicy • Acme',
+    original_link: 'https://example.com/job',
+    country: 'global'
+  });
+
+  const [item] = readCategory(root, 'it-jobs');
+  assert.equal(item.data.job_board, 'jobicy', 'the source label must identify an unmarked posting');
 });
 
 test('sub-category config and slug list cannot drift apart', () => {
