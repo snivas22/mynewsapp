@@ -191,6 +191,25 @@ test('job sections mix board postings with editorial news', () => {
   assert.equal(new Date(mixed[0].date) >= new Date(mixed[5].date), true, 'newest first');
 });
 
+test('job sections spread postings across different job sites', () => {
+  const postings = [
+    { inputPath: 'a1', date: '2026-09-19T00:00:00.000Z', data: { title: 'A1', job_board: 'site-a' } },
+    { inputPath: 'a2', date: '2026-09-18T00:00:00.000Z', data: { title: 'A2', job_board: 'site-a' } },
+    { inputPath: 'a3', date: '2026-09-17T00:00:00.000Z', data: { title: 'A3', job_board: 'site-a' } },
+    { inputPath: 'a4', date: '2026-09-16T00:00:00.000Z', data: { title: 'A4', job_board: 'site-a' } },
+    { inputPath: 'b1', date: '2026-09-15T00:00:00.000Z', data: { title: 'B1', job_board: 'site-b' } },
+    { inputPath: 'c1', date: '2026-09-14T00:00:00.000Z', data: { title: 'C1', job_board: 'site-c' } }
+  ];
+
+  const mixed = mixJobSection([...postings, ...makeItems('news', 6, 12, '')], 6);
+
+  assert.equal(mixed.length, 6);
+  const boards = mixed.filter((item) => item.data.job_board).map((item) => item.data.job_board);
+  assert.equal(boards.length, 3, 'half the section is postings');
+  assert.deepEqual([...new Set(boards)].sort(), ['site-a', 'site-b', 'site-c'], 'one posting per site');
+  assert.equal(mixed.filter((item) => !item.data.job_board).length, 3);
+});
+
 test('job sections top up from the other group when one is short', () => {
   const items = [
     ...makeItems('posting', 1, 19, 'jobicy'),

@@ -217,6 +217,39 @@ function readPool(articlesRoot, options = {}) {
 }
 
 /**
+ * Pick up to `quota` items spread across sources, newest first within each.
+ *
+ * Without this a section can show three postings from one board and none from
+ * the others, which hides the point of polling several job sites.
+ */
+function diversifyBySource(items, quota) {
+  const groups = new Map();
+
+  for (const item of items) {
+    const key = (item.data && item.data.job_board) || 'unknown';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+
+  const buckets = [...groups.values()];
+  const picked = [];
+
+  for (let depth = 0; picked.length < quota; depth += 1) {
+    const before = picked.length;
+
+    for (const bucket of buckets) {
+      if (picked.length >= quota) break;
+      if (bucket[depth]) picked.push(bucket[depth]);
+    }
+
+    // Nothing left in any bucket.
+    if (picked.length === before) break;
+  }
+
+  return picked;
+}
+
+/**
  * Build a sub-category section that shows both job-board postings and news.
  *
  * Plain date ordering lets one kind crowd the other out, so take half the
@@ -229,7 +262,7 @@ function mixJobSection(items, limit) {
   const quota = Math.ceil(limit / 2);
 
   const picked = [
-    ...postings.slice(0, quota),
+    ...diversifyBySource(postings, quota),
     ...news.slice(0, Math.max(0, limit - Math.min(postings.length, quota)))
   ];
 

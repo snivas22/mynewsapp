@@ -8,6 +8,7 @@ const {
   SEARCHABLE_JOB_SOURCES,
   matchesJobTerms,
   jobBoardFromSourceLabel,
+  resolveJobSources,
   normalizeJobPosting,
   normalizeRssJobPosting
 } = require('./lib/jobs');
@@ -213,16 +214,18 @@ function cleanText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
-async function fetchWithRetry(url, attempts = 3, timeoutMs = 20000) {
+async function fetchWithRetry(url, attempts = 3, timeoutMs = 20000, init = {}) {
   for (let i = 0; i < attempts; i++) {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const res = await fetch(url, {
+        ...init,
         signal: controller.signal,
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; news-aggregator/1.0; +https://github.com/snivas22/mynewsapp)',
-          'Accept': 'application/rss+xml, application/xml, text/xml, text/html;q=0.9, */*;q=0.8'
+          'Accept': 'application/rss+xml, application/xml, text/xml, application/json, text/html;q=0.9, */*;q=0.8',
+          ...(init.headers || {})
         }
       });
       clearTimeout(id);
@@ -392,18 +395,43 @@ async function parseJobBoardPayload(source, text, fallbackDate) {
     .filter(Boolean);
 }
 
+/** Build the request for a job source. Jooble needs a POST with a JSON body. */
+function jobSourceRequest(source, term, env) {
+  if (source.method === 'POST') {
+    return {
+      url: source.url(term, env),
+      init: {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: source.body ? source.body(term, env) : undefined
+      }
+    };
+  }
+
+  return { url: source.url(term, env), init: {} };
+}
+
 /**
  * Poll every job board once per run. Searchable sources are queried once per
- * unique keyword and the results are reused across categories.
+ * unique keyword and the results are reused across categories. Sources whose
+ * API key is missing from the environment are reported and skipped.
  */
-async function fetchJobBoardCache() {
+async function fetchJobBoardCache(env = process.env) {
   const fallbackDate = new Date().toISOString();
   const general = new Map();
   const searchable = new Map();
 
-  for (const source of GENERAL_JOB_SOURCES) {
+  const generalSources = resolveJobSources(GENERAL_JOB_SOURCES, env);
+  const searchableSources = resolveJobSources(SEARCHABLE_JOB_SOURCES, env);
+
+  for (const source of [...generalSources.skipped, ...searchableSources.skipped]) {
+    console.log(`Job board ${source.label}: skipped, set ${source.requiresEnv.join(', ')} to enable`);
+  }
+
+  for (const source of generalSources.available) {
     try {
-      const text = await fetchWithRetry(source.url(), 2, 20000);
+      const request = jobSourceRequest(source, undefined, env);
+      const text = await fetchWithRetry(request.url, 2, 20000, request.init);
       const postings = await parseJobBoardPayload(source, text, fallbackDate);
       general.set(source.id, postings);
       console.log(`Job board ${source.label}: ${postings.length} postings`);
@@ -415,14 +443,16 @@ async function fetchJobBoardCache() {
 
   const terms = [...new Set(Object.values(jobBoardsByCategory).flatMap((config) => config.tags))];
 
-  for (const source of SEARCHABLE_JOB_SOURCES) {
+  for (const source of searchableSources.available) {
     for (const term of terms) {
       try {
-        const text = await fetchWithRetry(source.url(term), 2, 20000);
+        const request = jobSourceRequest(source, term, env);
+        const text = await fetchWithRetry(request.url, 2, 20000, request.init);
         const postings = await parseJobBoardPayload(source, text, fallbackDate);
         searchable.set(`${source.id}:${term}`, postings);
+        console.log(`Job board ${source.label} (${term}): ${postings.length} postings`);
       } catch (err) {
-        console.warn(`Job board ${source.label} ("${term}") failed: ${err.message}`);
+        console.warn(`Job board ${source.label} (${term}) failed: ${err.message}`);
         searchable.set(`${source.id}:${term}`, []);
       }
     }

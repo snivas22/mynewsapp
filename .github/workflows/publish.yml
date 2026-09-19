@@ -43,6 +43,11 @@ jobs:
 
       - name: Fetch latest news data
         run: npm run fetch
+        env:
+          # Optional. A source is skipped when its secret is not configured.
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
 
       - name: Build static site
         run: npm run build

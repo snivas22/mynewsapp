@@ -16,6 +16,24 @@ Local development:
 - npm install
 - npm run dev
 - npm run build
+- npm test
+
+Job boards:
+The daily briefing job sub-categories combine Google News search results with real
+postings from public job-board APIs, merged by `scripts/fetch_rss.js`:
+
+- No key needed: Jobicy, Remotive, Remote OK, We Work Remotely, Himalayas, The Muse,
+  plus the GitLab, Databricks, Stripe, OpenAI, Ramp, Spotify and Toptal career boards.
+- Optional keys (set as repository secrets, then as env vars in the workflow):
+  - `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` - https://developer.adzuna.com
+  - `JOOBLE_API_KEY` - https://jooble.org/api/about
+  - optional `ADZUNA_COUNTRY` (default `in`)
+  A source whose key is missing is skipped and reported in the fetch log.
+
+Naukri, Indeed, Glassdoor and LinkedIn are deliberately not used: they publish no
+public jobs feed and forbid scraping. Their listings are reached indirectly through
+the aggregators above and through the companies' own applicant-tracking boards,
+which is where a posting originates before it is syndicated.
 
 Notes:
 - Respect source terms of use. This example uses public RSS feeds; confirm each publisher's usage policy.
