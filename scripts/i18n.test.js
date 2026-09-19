@@ -68,6 +68,17 @@ test('English and Telugu translation blocks stay in sync', () => {
   assert.deepEqual(onlyTelugu, [], `Keys missing from English: ${onlyTelugu.join(', ')}`);
 });
 
+test('daily briefing sub-category label and blurb keys exist in both languages', () => {
+  const { en, te } = readTranslations();
+  const template = fs.readFileSync(path.join(srcDir, 'categories', 'daily-briefing.njk'), 'utf8');
+
+  const keys = [...template.matchAll(/(?:labelKey|blurbKey):\s*'([A-Za-z0-9_]+)'/g)].map((match) => match[1]);
+  assert.equal(keys.length > 0, true, 'expected labelKey/blurbKey entries in the daily briefing template');
+
+  const missing = keys.filter((key) => !en.has(key) || !te.has(key));
+  assert.deepEqual(missing, [], `Missing sub-category translations: ${missing.join(', ')}`);
+});
+
 test('frontmatter round-trips values containing quotes and newlines', () => {
   const data = {
     title: 'He said "hello"',

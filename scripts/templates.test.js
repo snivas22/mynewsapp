@@ -5,6 +5,8 @@ const path = require('node:path');
 
 const srcDir = path.join(__dirname, '..', 'src');
 
+const { SUB_CATEGORIES } = require('./lib/articles');
+
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(dir, entry.name);
@@ -49,6 +51,16 @@ test('elements translated via data-i18n never wrap other elements', () => {
     /<span data-i18n="footerText">[\s\S]*?<\/span>\s*<span data-last-updated=/,
     'the footer text and the last-updated span must be siblings'
   );
+});
+
+test('every daily briefing sub-category is rendered on the briefing page', () => {
+  const template = fs.readFileSync(path.join(srcDir, 'categories', 'daily-briefing.njk'), 'utf8');
+
+  for (const slug of SUB_CATEGORIES) {
+    assert.equal(template.includes(`'${slug}'`), true, `${slug} must appear on the daily briefing page`);
+  }
+
+  assert.match(template, /for slug in subCategorySlugs/, 'the page must iterate the shared sub-category list');
 });
 
 test('sitemap and robots are emitted with the expected permalinks', () => {

@@ -89,8 +89,33 @@ const feedsByCategory = {
     'https://news.google.com/rss/search?q=Telangana+daily+briefing&hl=en-IN&gl=IN&ceid=IN:en',
     'https://news.google.com/rss/search?q=Andhra+Pradesh+daily+briefing&hl=en-IN&gl=IN&ceid=IN:en'
   ],
+  // Sub-categories of the daily briefing: live job-market news for Java roles.
+  'java-developer-jobs': [
+    'https://news.google.com/rss/search?q=Java+developer+jobs&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Java+developer+hiring+India&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Java+developer+job+openings&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Java+developer+vacancy+Hiring&hl=en-IN&gl=IN&ceid=IN:en'
+  ],
+  'java-full-stack-jobs': [
+    'https://news.google.com/rss/search?q=Java+full+stack+developer+jobs&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Java+full+stack+developer+hiring&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Full+stack+Java+developer+openings&hl=en-IN&gl=IN&ceid=IN:en',
+    'https://news.google.com/rss/search?q=Java+full+stack+engineer+job&hl=en-IN&gl=IN&ceid=IN:en'
+  ],
   favourites: []
 };
+
+// Categories whose feed URL itself identifies the region, so the region is read
+// from the source before falling back to keyword matching on the headline.
+const REGIONAL_SOURCE_CATEGORIES = [
+  'daily-briefing',
+  'java-developer-jobs',
+  'java-full-stack-jobs',
+  'india',
+  'andhra-pradesh',
+  'telangana',
+  'hyderabad'
+];
 
 function slugify(s) {
   return s
@@ -199,7 +224,7 @@ function resolveArticleCountry(category, feedUrl, title, summary) {
     ['india', /(\bindia\b|mumbai|delhi|modi|bengaluru|new delhi|gujarat|bangalore|india's)/]
   ];
 
-  if (category === 'daily-briefing' || category === 'india' || category === 'andhra-pradesh' || category === 'telangana' || category === 'hyderabad') {
+  if (REGIONAL_SOURCE_CATEGORIES.includes(category)) {
     const sourceRegion = [
       ['hyderabad', /hyderabad/],
       ['telangana', /telangana/],
@@ -378,6 +403,8 @@ if (require.main === module) {
 }
 
 module.exports = {
+  feedsByCategory,
+  REGIONAL_SOURCE_CATEGORIES,
   normalizeRegionToken,
   mergeCategoryArticles,
   resolveArticleCountry,

@@ -2,9 +2,11 @@ const path = require('path');
 
 const {
   CATEGORIES,
+  SUB_CATEGORIES,
   COUNTRY_SLUGS,
   COUNTRY_LABELS,
   CATEGORY_LIMIT,
+  SUB_CATEGORY_LIMIT,
   COUNTRY_LIMIT,
   countryLabel: formatCountryLabel,
   readCategory,
@@ -37,6 +39,7 @@ module.exports = function(eleventyConfig) {
       { slug: 'entertainment', label: 'Entertainment', blurb: 'Film, music, culture, and celebrity news' },
       { slug: 'science', label: 'Science', blurb: 'Research and environmental updates' },
       { slug: 'health', label: 'Health', blurb: 'Medical reporting and wellbeing stories' },
+      { slug: 'daily-briefing', label: 'Daily briefing', blurb: 'India and regional updates in one briefing' },
       { slug: 'favourites', label: 'Favourites', blurb: 'Your saved spotlight stories and must-reads' }
     ],
     countries: [
@@ -56,6 +59,9 @@ module.exports = function(eleventyConfig) {
     slug,
     label: COUNTRY_LABELS[slug]
   })));
+
+  // Order of the job sub-category sections on the daily briefing page.
+  eleventyConfig.addGlobalData('subCategorySlugs', SUB_CATEGORIES);
 
   eleventyConfig.addFilter('readableDate', (dateObj) => {
     try {
@@ -94,6 +100,14 @@ module.exports = function(eleventyConfig) {
   categories.forEach((cat) => {
     eleventyConfig.addCollection(cat, () =>
       readCategory(articlesRoot, cat).slice(0, CATEGORY_LIMIT)
+    );
+  });
+
+  // Daily-briefing sub-categories: their own collections, kept out of the
+  // country pool so job-market news never lands on a regional dashboard.
+  SUB_CATEGORIES.forEach((cat) => {
+    eleventyConfig.addCollection(cat, () =>
+      readCategory(articlesRoot, cat).slice(0, SUB_CATEGORY_LIMIT)
     );
   });
 

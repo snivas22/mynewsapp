@@ -8,6 +8,7 @@ const {
   CATEGORY_LIMIT,
   COUNTRY_LIMIT,
   COUNTRY_SLUGS,
+  SUB_CATEGORIES,
   countryLabel,
   countryCounts,
   normalizeCountry,
@@ -120,6 +121,34 @@ test('countryCounts reports every supported region with real numbers', () => {
   assert.equal(counts['andhra-pradesh'], 1);
   assert.equal(counts.india, 0);
   assert.equal(counts.uae, 0);
+});
+
+test('daily briefing job sub-categories stay out of the country pool', () => {
+  const root = makeFixture();
+
+  for (const slug of SUB_CATEGORIES) {
+    writeArticle(root, slug, `${slug}-opening`, {
+      title: `${slug} opening`,
+      date: '2026-08-10T00:00:00.000Z',
+      category: slug,
+      source: 'Example',
+      original_link: `https://example.com/${slug}`,
+      country: 'india'
+    });
+  }
+
+  const pool = readPool(root);
+  assert.deepEqual(
+    pool.filter((item) => SUB_CATEGORIES.includes(item.data.category)),
+    [],
+    'job sub-categories must not feed the country pool'
+  );
+
+  for (const slug of SUB_CATEGORIES) {
+    assert.equal(readCategory(root, slug).length, 1, `${slug} should still be readable as its own collection`);
+  }
+
+  assert.equal(byCountry(pool, 'india').length, 0);
 });
 
 test('display limits stay meaningful', () => {

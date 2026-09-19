@@ -1267,3 +1267,42 @@ a:focus-visible {
   }
 }
 
+/* Daily briefing job sub-categories */
+.subcategory-stack {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.subcategory-intro {
+  margin-bottom: 0.25rem;
+}
+
+.subcategory-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin: 1.75rem 0 1rem;
+}
+
+.subcategory-head h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.subcategory-blurb {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.subcategory-count {
+  margin: 0 0 0 auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+

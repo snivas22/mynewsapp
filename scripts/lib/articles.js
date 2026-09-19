@@ -34,10 +34,22 @@ const CATEGORIES = [
   'favourites'
 ];
 
+/**
+ * Sub-categories of the daily briefing. They get their own collections so the
+ * daily briefing page can render them, but they stay out of the country pool so
+ * job-market news never shows up on a regional dashboard.
+ */
+const SUB_CATEGORIES = ['java-developer-jobs', 'java-full-stack-jobs'];
+
+/** Every category that has an article directory, in sidebar/reading order. */
+const ALL_CATEGORIES = [...CATEGORIES, ...SUB_CATEGORIES];
+
 const COUNTRY_SLUGS = ['uk', 'us', 'india', 'andhra-pradesh', 'telangana', 'hyderabad', 'australia', 'uae'];
 
 /** How many stories a single category page lists. */
 const CATEGORY_LIMIT = 8;
+/** How many stories each daily-briefing sub-category section lists. */
+const SUB_CATEGORY_LIMIT = 6;
 /** How many stories a single country/region dashboard lists. */
 const COUNTRY_LIMIT = 40;
 /** Categories that should never feed the shared pool (no articles of their own). */
@@ -167,9 +179,12 @@ function countryCounts(items) {
 
 module.exports = {
   CATEGORIES,
+  SUB_CATEGORIES,
+  ALL_CATEGORIES,
   COUNTRY_SLUGS,
   COUNTRY_LABELS,
   CATEGORY_LIMIT,
+  SUB_CATEGORY_LIMIT,
   COUNTRY_LIMIT,
   DEFAULT_COUNTRY,
   normalizeCountry,

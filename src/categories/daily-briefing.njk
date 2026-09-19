@@ -40,3 +40,56 @@ title: Daily Briefing
     </article>
   {% endfor %}
 </div>
+
+<section class="subcategory-stack" aria-label="Daily briefing sub-categories">
+  {% set subMeta = {
+    'java-developer-jobs': {
+      labelKey: 'subJavaDeveloperJobs',
+      blurbKey: 'subJavaDeveloperJobsBlurb',
+      label: 'జావా డెవలపర్ ఉద్యోగాలు',
+      blurb: 'జావా డెవలపర్ పాత్రల కోసం లైవ్ నియామక వార్తలు.'
+    },
+    'java-full-stack-jobs': {
+      labelKey: 'subJavaFullStackJobs',
+      blurbKey: 'subJavaFullStackJobsBlurb',
+      label: 'జావా ఫుల్ స్టాక్ డెవలపర్ ఉద్యోగాలు',
+      blurb: 'జావా ఫుల్ స్టాక్ డెవలపర్ పాత్రల కోసం లైవ్ నియామక వార్తలు.'
+    }
+  } %}
+
+  <div class="page-header subcategory-intro">
+    <p class="eyebrow" data-i18n="subCategoriesHeading">ఉపవర్గాలు</p>
+    <h2 data-i18n="subCategoriesTitle">ఉద్యోగ అవకాశాలు</h2>
+  </div>
+
+  {% for slug in subCategorySlugs %}
+    {% set meta = subMeta[slug] %}
+    {% set subItems = collections[slug] %}
+
+    <div class="subcategory-head">
+      <h3 data-i18n="{{ meta.labelKey }}">{{ meta.label }}</h3>
+      <p class="subcategory-blurb" data-i18n="{{ meta.blurbKey }}">{{ meta.blurb }}</p>
+      <p class="subcategory-count">{{ subItems | length }} <span data-i18n="stories">కథనాలు</span></p>
+    </div>
+
+    <div class="story-grid">
+      {% if subItems | length == 0 %}
+        <div class="empty-panel" data-i18n="noSubCategoryStories">ఈ ఉపవర్గానికి కథనాలు ఇంకా లేవు.</div>
+      {% endif %}
+      {% for item in subItems %}
+        <article class="story-card" data-country="{{ item.data.country or 'global' }}" data-searchable="{{ item.data.title }} {{ item.data.source }} {{ item.templateContent | striptags }}">
+          <div class="story-meta">
+            <span class="story-source {{ item.data.category }}">{{ item.data.source }}</span>
+            <span>{{ item.date | readableDate }}</span>
+          </div>
+          <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
+          <p>{{ item.templateContent | striptags | truncate(180) }}</p>
+          <div class="story-actions">
+            <a class="read-more" href="{{ item.url }}" data-i18n="readArticle">కథనాన్ని చదవండి</a>
+            <button class="favorite-toggle" data-url="{{ item.url }}" data-title="{{ item.data.title }}" data-source="{{ item.data.source }}" data-date="{{ item.date | readableDate }}" data-i18n="save">సేవ్ చేయండి</button>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</section>
